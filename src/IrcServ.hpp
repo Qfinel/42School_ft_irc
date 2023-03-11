@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:29:49 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/11 16:26:10 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/11 17:51:23 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,9 @@ class IrcServ
 
 		void start();
 		void setSocket();
+		void receiveMsg();
+		void handleDisconnect(int socket_fd);
+		void handleConnect();
+		void handleMessage(int socket_fd);
 
 };

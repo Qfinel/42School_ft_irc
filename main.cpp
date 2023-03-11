@@ -6,11 +6,19 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:12:35 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/11 13:01:27 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/11 17:25:11 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "src/Irc.hpp"
+#include "src/IrcServ.hpp"
+
+bool is_number(const std::string& str)
+{
+    std::string::const_iterator it = str.begin();
+    while (it != str.end() && std::isdigit(*it))
+		it++;
+    return (it == str.end());
+}
 
 int	main(int argc, char **argv)
 {
@@ -19,7 +27,7 @@ int	main(int argc, char **argv)
 		std::cerr << "Usage: ./ircserv <port> <password>" << std::endl;
 		return (-1);
 	}
-	else if (!isnumber(argv[1]))
+	else if (!is_number(argv[1]))
 	{
 		std::cerr << "PORT should be a number" << std::endl;
 		return (-1);
