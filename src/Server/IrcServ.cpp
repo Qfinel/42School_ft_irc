@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/12 15:33:42 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/12 16:02:41 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,9 @@ void IrcServ::receiveMessage(int fd)
 
 	bzero(buf, 1024);
 	if (recv(fd, buf, 1024, 0) < 0)
-		throw std::runtime_error("Error while receiving message");
+		throw std::runtime_error("Error while receiving a message");
 
+	//MESSAGES SHOULD BE HANDLED BY COMMAND HANDLER (NOT NECESSARILY PRINTED)
 	std::cout << buf;
 }
 
@@ -135,7 +136,7 @@ void IrcServ::start()
 		if (ready < 0)
 			throw std::runtime_error("Error while polling file descriptors");
 
-		for (int i = 0; i < this->_fds.size(); i++)
+		for (int i = 0; i < (int)this->_fds.size(); i++)
 		{
 			if (this->_fds[i].revents & POLLHUP) //End of the conneciton
 			{

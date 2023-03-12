@@ -6,17 +6,23 @@
 #    By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/24 14:09:59 by jtsizik           #+#    #+#              #
-#    Updated: 2023/03/12 15:07:18 by jtsizik          ###   ########.fr        #
+#    Updated: 2023/03/12 16:02:18 by jtsizik          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ircserv
 
-# HDRS =	
+HDRS =	src/Server/IrcClient.hpp \
+		src/Server/IrcServ.hpp	
 
-OBJS =	obj/main.o
+OBJS =	obj/IrcClient.o \
+		obj/IrcServ.o \
+		obj/main.o
 
-obj/%.o: src/%.cpp
+obj/%.o: src/Server/%.cpp
+	c++ -c -Wall -Wextra -Werror -std=c++98 $< -o $@
+
+obj/%.o: %.cpp
 	c++ -c -Wall -Wextra -Werror -std=c++98 $< -o $@
 
 $(NAME): obj $(OBJS)
