@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/12 13:08:44 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/12 15:33:42 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,6 @@ IrcServ::IrcServ(char *port, char *pass) : _port(atoi(port)), _pass(pass)
 }
 
 IrcServ::~IrcServ()	{}
-
-void IrcServ::receiveMsg()
-{
-	//Receiving a message from the client
-	return ;
-}
 
 void IrcServ::handleDisconnect(int index)
 {
@@ -76,9 +70,16 @@ void IrcServ::handleConnect()
 	this->_fds.push_back(new_poll);
 }
 
-void IrcServ::handleMessage(int socket_fd)
-{
-	return ;
+void IrcServ::receiveMessage(int fd)
+{	
+	//Receiving a message from the client
+	char	buf[1024];
+
+	bzero(buf, 1024);
+	if (recv(fd, buf, 1024, 0) < 0)
+		throw std::runtime_error("Error while receiving message");
+
+	std::cout << buf;
 }
 
 void IrcServ::setSocket()
@@ -148,7 +149,7 @@ void IrcServ::start()
 					handleConnect();
 					break ;
 				}
-				handleMessage(this->_fds[i].fd);
+				receiveMessage(this->_fds[i].fd);
 			}
 		}
 	}

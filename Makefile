@@ -6,7 +6,7 @@
 #    By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/24 14:09:59 by jtsizik           #+#    #+#              #
-#    Updated: 2023/02/24 14:11:58 by jtsizik          ###   ########.fr        #
+#    Updated: 2023/03/12 15:07:18 by jtsizik          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,9 @@ all: $(NAME)
 
 obj:
 	mkdir obj
+
+install:
+
 
 clean:
 	rm -rf obj
