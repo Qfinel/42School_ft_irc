@@ -1,21 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   CommandHandler.hpp                                 :+:      :+:    :+:   */
+/*   IrcClient.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/24 14:36:42 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/12 11:47:53 by jtsizik          ###   ########.fr       */
+/*   Created: 2023/03/12 12:00:17 by jtsizik           #+#    #+#             */
+/*   Updated: 2023/03/12 12:00:44 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COMMANDHANDLER_HPP
-# define COMMANDHANDLER_HPP
+#include "IrcClient.hpp"
 
-class CommandHandler
-{
-	//smth
-};
+IrcClient::IrcClient()	{}
 
-#endif
+IrcClient::~IrcClient()	{}

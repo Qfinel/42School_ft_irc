@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/11 19:10:57 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/12 12:13:54 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,15 @@ void IrcServ::handleDisconnect(int socket_fd)
 
 void IrcServ::handleConnect()
 {
-	int					new_fd;
 	struct sockaddr_in	address = {};
+	socklen_t add_size = sizeof(address);
 
 	//Accepting socket
-	int new_fd = accept(this->_socket, (struct sockaddr*)&address, (socklen_t*)(sizeof(address)));
-	if (new_fd < 0)
+	int client_fd = accept(this->_socket, (struct sockaddr*)&address, &add_size);
+	if (client_fd < 0)
 		throw std::runtime_error("Error while accepting socket");
+	
+	std::cout << "New client connected!" << std::endl;
 }
 
 void IrcServ::handleMessage(int socket_fd)
@@ -91,28 +93,33 @@ void IrcServ::start()
 	fds[0].events = POLLIN;
 	fds[0].revents = 0;
 
+	std::cout << "Waiting for connections..." << std::endl;
+
 	while (_started)
 	{
-		//Polling file descriptors (returns how many fds are ready)
+		//Polling file descriptors (returns how many events are ready)
 		int ready = poll(fds, fds_nb, -1);
 		if (ready < 0)
 			throw std::runtime_error("Error while polling file descriptors");
 
 		for (int i = 0; i < 20; i++)
 		{
-			if (fds[i].revents & POLLHUP) //End of the conneciton
+			if (fds[i].revents != 0)
 			{
-				handleDisconnect(fds[i].fd);
-				return ;
-			}
-			else if ((fds[i].revents & POLLIN)) //Received some event
-			{
-				if (fds[i].fd == this->_socket)
+				if (fds[i].revents & POLLHUP) //End of the conneciton
 				{
-					handleConnect();
-					return ;
+					handleDisconnect(fds[i].fd);
+					break ;
 				}
-				handleMessage(fds[i].fd);
+				else if ((fds[i].revents & POLLIN)) //Received some event
+				{
+					if (fds[i].fd == this->_socket)
+					{
+						handleConnect();
+						break ;
+					}
+					handleMessage(fds[i].fd);
+				}
 			}
 		}
 	}
