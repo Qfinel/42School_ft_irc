@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:29:49 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/12 12:05:04 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/12 13:02:52 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <vector>
+# include <unistd.h>
+# include "IrcClient.hpp"
 
 class IrcServ
 {
@@ -29,7 +31,8 @@ class IrcServ
 		int					_socket;
 		bool				_started;
 	
-		// std::vector<IrcClient>	_clients;
+		std::vector<struct pollfd>	_fds;
+		std::vector<IrcClient>		_clients;
 		// std::vector<IrcChannel>	_channels;
 
 	public:
@@ -39,7 +42,7 @@ class IrcServ
 		void start();
 		void setSocket();
 		void receiveMsg();
-		void handleDisconnect(int socket_fd);
+		void handleDisconnect(int index);
 		void handleConnect();
 		void handleMessage(int socket_fd);
 

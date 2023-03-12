@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/12 12:13:54 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/12 13:08:44 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,32 @@ void IrcServ::receiveMsg()
 	return ;
 }
 
-void IrcServ::handleDisconnect(int socket_fd)
+void IrcServ::handleDisconnect(int index)
 {
-	return ;
+	std::cout << "Client disconnected!" << std::endl;
+
+	int	fd_del = this->_fds[index].fd;
+
+	close(fd_del);
+
+	std::vector<struct pollfd>::iterator 	it = this->_fds.begin();
+	for (int i = 0; i <= index; i++)
+	{
+		if (i == index)
+			this->_fds.erase(it);
+		it++;
+	}
+
+	std::vector<IrcClient>::iterator	it_cl = this->_clients.begin();
+	while (it_cl != this->_clients.end())
+	{
+		if (it_cl->getFd() == fd_del)
+		{
+			this->_clients.erase(it_cl);
+			break ;
+		}
+		it_cl++;
+	}
 }
 
 void IrcServ::handleConnect()
@@ -42,6 +65,15 @@ void IrcServ::handleConnect()
 		throw std::runtime_error("Error while accepting socket");
 	
 	std::cout << "New client connected!" << std::endl;
+
+	IrcClient new_client(client_fd);
+	this->_clients.push_back(new_client);
+
+	struct pollfd 	new_poll;
+	new_poll.fd = client_fd;
+	new_poll.events = POLLIN;
+	new_poll.revents = 0;
+	this->_fds.push_back(new_poll);
 }
 
 void IrcServ::handleMessage(int socket_fd)
@@ -85,41 +117,38 @@ void IrcServ::setSocket()
 
 void IrcServ::start()
 {
-	struct pollfd	fds[20];
+	struct pollfd serv_poll;
 	this->_started = true;
-	int		fds_nb = 1;
 
-	fds[0].fd = this->_socket;
-	fds[0].events = POLLIN;
-	fds[0].revents = 0;
+	serv_poll.fd = this->_socket;
+	serv_poll.events = POLLIN;
+	serv_poll.revents = 0;
+	this->_fds.push_back(serv_poll);
 
 	std::cout << "Waiting for connections..." << std::endl;
 
 	while (_started)
 	{
 		//Polling file descriptors (returns how many events are ready)
-		int ready = poll(fds, fds_nb, -1);
+		int ready = poll(&this->_fds[0], this->_fds.size(), -1);
 		if (ready < 0)
 			throw std::runtime_error("Error while polling file descriptors");
 
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < this->_fds.size(); i++)
 		{
-			if (fds[i].revents != 0)
+			if (this->_fds[i].revents & POLLHUP) //End of the conneciton
 			{
-				if (fds[i].revents & POLLHUP) //End of the conneciton
+				handleDisconnect(i);
+				break ;
+			}
+			else if ((this->_fds[i].revents & POLLIN)) //Received some event
+			{
+				if (this->_fds[i].fd == this->_socket)
 				{
-					handleDisconnect(fds[i].fd);
+					handleConnect();
 					break ;
 				}
-				else if ((fds[i].revents & POLLIN)) //Received some event
-				{
-					if (fds[i].fd == this->_socket)
-					{
-						handleConnect();
-						break ;
-					}
-					handleMessage(fds[i].fd);
-				}
+				handleMessage(this->_fds[i].fd);
 			}
 		}
 	}

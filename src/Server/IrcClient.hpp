@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 11:46:18 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/12 12:00:06 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/12 13:04:37 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,10 @@ class IrcClient
 		int		_fd;
 
 	public:
-		IrcClient();
+		IrcClient(int fd);
 		~IrcClient();
+
+		int	getFd();
 };
 
 #endif

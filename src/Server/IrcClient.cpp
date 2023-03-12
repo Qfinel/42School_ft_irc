@@ -6,12 +6,14 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 12:00:17 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/12 12:00:44 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/12 13:07:51 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "IrcClient.hpp"
 
-IrcClient::IrcClient()	{}
+IrcClient::IrcClient(int fd)	{this->_fd = fd;}
 
 IrcClient::~IrcClient()	{}
+
+int	 IrcClient::getFd()	{return (this->_fd);}
