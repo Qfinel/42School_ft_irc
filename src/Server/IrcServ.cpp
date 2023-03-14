@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/12 16:02:41 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/14 15:29:07 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,37 +15,27 @@
 IrcServ::IrcServ(char *port, char *pass) : _port(atoi(port)), _pass(pass)
 {
 	setSocket();
-	this->_started = false;
+	this->_running = false;
 }
 
 IrcServ::~IrcServ()	{}
 
-void IrcServ::handleDisconnect(int index)
+void IrcServ::handleDisconnect(int fd)
 {
 	std::cout << "Client disconnected!" << std::endl;
 
-	int	fd_del = this->_fds[index].fd;
+	close(fd);
 
-	close(fd_del);
-
-	std::vector<struct pollfd>::iterator 	it = this->_fds.begin();
-	for (int i = 0; i <= index; i++)
+	for (std::vector<struct pollfd>::iterator it = this->_fds.begin(); it != this->_fds.end(); it++)
 	{
-		if (i == index)
-			this->_fds.erase(it);
-		it++;
-	}
-
-	std::vector<IrcClient>::iterator	it_cl = this->_clients.begin();
-	while (it_cl != this->_clients.end())
-	{
-		if (it_cl->getFd() == fd_del)
+		if (it->fd == fd)
 		{
-			this->_clients.erase(it_cl);
+			this->_fds.erase(it);
 			break ;
 		}
-		it_cl++;
 	}
+
+	this->_clients.erase(fd);
 }
 
 void IrcServ::handleConnect()
@@ -61,7 +51,9 @@ void IrcServ::handleConnect()
 	std::cout << "New client connected!" << std::endl;
 
 	IrcClient new_client(client_fd);
-	this->_clients.push_back(new_client);
+	this->_clients.insert(std::make_pair(client_fd, new_client));
+
+	new_client.sendResponse("Welcome on board!");
 
 	struct pollfd 	new_poll;
 	new_poll.fd = client_fd;
@@ -79,8 +71,8 @@ void IrcServ::receiveMessage(int fd)
 	if (recv(fd, buf, 1024, 0) < 0)
 		throw std::runtime_error("Error while receiving a message");
 
-	//MESSAGES SHOULD BE HANDLED BY COMMAND HANDLER (NOT NECESSARILY PRINTED)
-	std::cout << buf;
+	CommandHandler	command(this, &this->_clients.at(fd), buf);
+	command.handle();
 }
 
 void IrcServ::setSocket()
@@ -120,7 +112,7 @@ void IrcServ::setSocket()
 void IrcServ::start()
 {
 	struct pollfd serv_poll;
-	this->_started = true;
+	this->_running = true;
 
 	serv_poll.fd = this->_socket;
 	serv_poll.events = POLLIN;
@@ -129,7 +121,7 @@ void IrcServ::start()
 
 	std::cout << "Waiting for connections..." << std::endl;
 
-	while (_started)
+	while (_running)
 	{
 		//Polling file descriptors (returns how many events are ready)
 		int ready = poll(&this->_fds[0], this->_fds.size(), -1);
@@ -138,9 +130,11 @@ void IrcServ::start()
 
 		for (int i = 0; i < (int)this->_fds.size(); i++)
 		{
+			if (this->_fds[i].revents == 0) //Skip iteration if no events
+				continue ;
 			if (this->_fds[i].revents & POLLHUP) //End of the conneciton
 			{
-				handleDisconnect(i);
+				handleDisconnect(this->_fds[i].fd);
 				break ;
 			}
 			else if ((this->_fds[i].revents & POLLIN)) //Received some event
