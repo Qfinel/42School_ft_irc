@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/14 15:14:09 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/14 15:43:51 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,5 +23,5 @@ CommandHandler::~CommandHandler()	{}
 
 void CommandHandler::handle()
 {
-	
+	std::cout << this->_comm;
 }
