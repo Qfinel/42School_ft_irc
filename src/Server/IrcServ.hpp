@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:29:49 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/14 14:43:23 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/14 16:46:45 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class IrcServ
 		IrcServ(char *port, char *pass);
 		~IrcServ();
 
+		std::string	getPass();
 		void start();
 		void setSocket();
 		void handleDisconnect(int fd);

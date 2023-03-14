@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/14 15:29:07 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/14 17:06:52 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ IrcServ::IrcServ(char *port, char *pass) : _port(atoi(port)), _pass(pass)
 }
 
 IrcServ::~IrcServ()	{}
+
+std::string	IrcServ::getPass()	{return (this->_pass);}
 
 void IrcServ::handleDisconnect(int fd)
 {
@@ -53,7 +55,14 @@ void IrcServ::handleConnect()
 	IrcClient new_client(client_fd);
 	this->_clients.insert(std::make_pair(client_fd, new_client));
 
-	new_client.sendResponse("Welcome on board!");
+	try
+	{
+		new_client.sendResponse("Welcome on board! Please provide a server password using PASS command");
+	}
+	catch (const std::runtime_error& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
 
 	struct pollfd 	new_poll;
 	new_poll.fd = client_fd;
@@ -72,7 +81,15 @@ void IrcServ::receiveMessage(int fd)
 		throw std::runtime_error("Error while receiving a message");
 
 	CommandHandler	command(this, &this->_clients.at(fd), buf);
-	command.handle();
+
+	try
+	{
+		command.handle();
+	}
+	catch (std::runtime_error &e)
+	{
+		std::cout << e.what() << std::endl;
+	}
 }
 
 void IrcServ::setSocket()

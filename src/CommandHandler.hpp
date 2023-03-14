@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:42 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/14 15:08:06 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/14 17:01:12 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <iostream>
 # include <string>
+# include <sstream>
 # include "Server/IrcServ.hpp"
 
 class IrcServ;

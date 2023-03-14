@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 11:46:18 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/14 14:42:40 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/14 17:02:05 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ class IrcClient
 
 		int		getFd();
 		void	sendResponse(std::string response);
+		bool	getIsAuth();
+		void	setAuth();
 };
 
 #endif
