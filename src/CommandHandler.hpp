@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:42 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/14 17:01:12 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/16 14:03:48 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ class Command;
 class CommandHandler
 {
 	private:
-		std::string		_comm;
+		std::string		_buff;
+		Command			*_comm;
 		IrcServ			*_serv;
 		IrcClient		*_client;
 	public:

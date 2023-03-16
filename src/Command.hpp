@@ -22,6 +22,11 @@ public:
     void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
 };
 
+class QuitCommand : public Command {
+public:
+    void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
+};
+
 class UserCommand : public Command {
 public:
     void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);

@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/14 17:08:27 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/16 15:05:20 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,13 @@
 
 CommandHandler::CommandHandler(IrcServ *serv, IrcClient *cl, std::string buffer)
 {
-	this->_comm = buffer;
+	this->_comm = NULL;
+    this->_buff = buffer;
 	this->_client = cl;
 	this->_serv = serv;
 }
 
-CommandHandler::~CommandHandler()	{}
+CommandHandler::~CommandHandler()	{delete this->_comm;}
 
 // void CommandHandler::handle()
 // {
@@ -53,6 +54,8 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
         return new PassCommand();
     } else if (commandName == "NICK") {
 		return new NickCommand();
+	} else if (commandName == "QUIT") {
+		return new QuitCommand();
 	} else if (commandName == "USER") {
 		return new UserCommand();
 	} else if (commandName == "JOIN") {
@@ -66,7 +69,7 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
 }
 
 void CommandHandler::handle() {
-    std::istringstream iss(this->_comm);
+    std::istringstream iss(this->_buff);
     std::string commandName, word;
     std::vector<std::string> args;
 
@@ -76,14 +79,16 @@ void CommandHandler::handle() {
     }
 
     Command* command = getCommand(commandName);
+    this->_comm = command;
 
-    if (!this->_client->getIsAuth() && commandName != "PASS") {
-        this->_client->sendResponse("Please provide a server password using PASS command");
-    } else if (command != NULL) {
+    std::cout << this->_buff; //for debugging
+
+    if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT" && commandName != "NICK")
+        this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
+    else if (command != NULL)
         command->execute(*_serv, *_client, args);
-        delete command; // Don't forget to delete the command to prevent memory leaks
-    } else {
-        // Handle unrecognized commands or just print the received command
-        std::cout << this->_comm;
-    }
+    // else {
+    //     // Handle unrecognized commands or just print the received command
+    //     std::cout << this->_buff;
+    // }
 }
