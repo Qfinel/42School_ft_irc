@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 12:00:17 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/16 13:13:43 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/16 15:02:46 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	IrcClient::setAuth()	{this->_isAuth = true;}
 
 void IrcClient::sendResponse(std::string response)
 {
-	std::string msg = response + "\n";
+	std::string msg = response + "\r\n";
 	if (send(this->_fd, msg.c_str(), msg.length(), 0) < 0)
 		throw std::runtime_error("Failed sending response to the client");
 }

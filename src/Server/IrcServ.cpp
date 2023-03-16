@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/16 13:14:38 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/16 14:27:29 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,14 +56,14 @@ void IrcServ::handleConnect()
 	IrcClient new_client(client_fd);
 	this->_clients.insert(std::make_pair(client_fd, new_client));
 
-	try
-	{
-		new_client.sendResponse("001 " + new_client.getNickname() + " :Welcome on board! Please provide a server password using PASS command");
-	}
-	catch (const std::runtime_error& e)
-	{
-		std::cerr << e.what() << '\n';
-	}
+	// try
+	// {
+	// 	new_client.sendResponse("Welcome on board! Please provide a server password using PASS command");
+	// }
+	// catch (const std::runtime_error& e)
+	// {
+	// 	std::cerr << e.what() << '\n';
+	// }
 
 	struct pollfd 	new_poll;
 	new_poll.fd = client_fd;

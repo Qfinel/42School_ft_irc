@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/16 14:03:55 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/16 15:01:53 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,12 +75,14 @@ void CommandHandler::handle() {
     Command* command = getCommand(commandName);
     this->_comm = command;
 
-    if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT") {
-        this->_client->sendResponse("Please provide a server password using PASS command");
-    } else if (command != NULL) {
+    std::cout << this->_buff; //for debugging
+
+    if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT" && commandName != "NICK")
+        this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
+    else if (command != NULL)
         command->execute(*_serv, *_client, args);
-    } else {
-        // Handle unrecognized commands or just print the received command
-        std::cout << this->_comm;
-    }
+    // else {
+    //     // Handle unrecognized commands or just print the received command
+    //     std::cout << this->_buff;
+    // }
 }

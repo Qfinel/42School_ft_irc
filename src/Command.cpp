@@ -13,7 +13,7 @@ void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
             client.sendResponse("Congratulations! You are authenticated!");
             client.setAuth();
         } else {
-            client.sendResponse("464 :It's a wrong password ;(");
+            client.sendResponse("464 * :It's a wrong password ;(");
         }
     } else {
         client.sendResponse("You are already authenticated.");
@@ -22,10 +22,11 @@ void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
 
 void NickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
     (void)server;
-	if (args.size() != 1) {
+	if (args.size() < 1) {
         // Send an error message to the client.
         return;
     }
+
     // Set the client's nickname and send a response.
     client.setNickname(args[0]);
 	client.sendResponse("Your nickname is now " + args[0]);
