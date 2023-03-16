@@ -41,6 +41,12 @@ class IrcClient
 		void 	setRealname(std::string realname);
 		void 	setHostname(std::string hostname);
 		void 	setServername(std::string servername);
+        
+        std::string getNickname();
+        std::string getUsername();
+        std::string getRealname();
+        std::string getHostname();
+        std::string getServername();
 };
 
 #endif

@@ -45,3 +45,13 @@ void 	IrcClient::setRealname(std::string realname)	{this->_realname = realname;}
 void 	IrcClient::setHostname(std::string hostname)	{this->_hostname = hostname;}
 
 void 	IrcClient::setServername(std::string servername)	{this->_servername = servername;}
+
+std::string IrcClient::getNickname() { return this->_nickname; }
+
+std::string IrcClient::getUsername() { return this->_username; }
+
+std::string IrcClient::getRealname() { return this->_realname; }
+
+std::string IrcClient::getHostname() { return this->_hostname; }
+
+std::string IrcClient::getServername() { return this->_servername; }

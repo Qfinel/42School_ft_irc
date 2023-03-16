@@ -57,7 +57,9 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
 		return new UserCommand();
 	} else if (commandName == "JOIN") {
 		return new JoinCommand();
-	}
+	} else if (commandName == "PRIVMSG") {
+        return new PrivmsgCommand();
+    }
 	
     // Add other commands here, e.g. NICK, USER, JOIN, etc.
     return NULL;

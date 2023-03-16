@@ -32,9 +32,9 @@ public:
     void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
 };
 
-// class PrivmsgCommand : public Command {
-// public:
-//     void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) override;
-// };
+class PrivmsgCommand : public Command {
+public:
+    void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
+};
 
 // // Add other command classes like PartCommand, QuitCommand, etc.

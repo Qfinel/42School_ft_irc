@@ -197,3 +197,14 @@ void IrcServ::joinChannel(IrcClient &client, const std::string &channelName) {
     // Notify the client that they have joined the channel
     client.sendResponse("You have joined the channel: " + channelName);
 }
+
+void IrcServ::sendPrivateMessage(IrcClient& sender, const std::string& targetUser, const std::string& message) {
+    for (std::map<int, IrcClient>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+        if (it->second.getNickname() == targetUser) {
+            std::string response = ":" + sender.getNickname() + " PRIVMSG " + targetUser + " :" + message + "\r\n";
+            it->second.sendResponse(response);
+            return;
+        }
+    }
+    // Target user not found; you can handle this case if needed.
+}

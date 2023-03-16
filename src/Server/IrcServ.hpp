@@ -47,6 +47,7 @@ class IrcServ
 		void handleConnect();
 		void receiveMessage(int fd);
 		void joinChannel(IrcClient &client, const std::string &channelName);
+        void sendPrivateMessage(IrcClient& sender, const std::string& targetUser, const std::string& message);
 
 };
 

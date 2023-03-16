@@ -1,6 +1,7 @@
 #include "Command.hpp"
 #include "Server/IrcServ.hpp"
 #include "Server/IrcClient.hpp"
+#include <sstream>
 
 void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() != 1) {
@@ -65,13 +66,24 @@ void JoinCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
     server.joinChannel(client, args[0]);
 }
 
-// void PrivmsgCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
-//     if (args.size() < 2) {
-//         // Send an error message to the client.
-//         return;
-//     }
-//     // Send a private message from the client to the specified target.
-//     server.sendPrivateMessage(client, args[0], args[1]);
-// }
+void PrivmsgCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() < 2) {
+        // Send an error message to the client.
+        return;
+    }
+
+    // Concatenate all arguments after the first one as the message.
+    std::ostringstream messageStream;
+    for (size_t i = 1; i < args.size(); ++i) {
+        messageStream << args[i];
+        if (i < args.size() - 1) {
+            messageStream << " ";
+        }
+    }
+    std::string message = messageStream.str();
+
+    // Send a private message from the client to the specified target.
+    server.sendPrivateMessage(client, args[0], message);
+}
 
 // // Implement other command classes like PartCommand, QuitCommand, etc.
