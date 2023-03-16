@@ -83,10 +83,13 @@ void CommandHandler::handle() {
 
     std::cout << this->_buff; //for debugging
 
-    if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT" && commandName != "NICK")
+    if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT" && commandName != "NICK") {
         this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
-    else if (command != NULL)
-        command->execute(*_serv, *_client, args);
+    } else if (command != NULL) {
+        if (commandName == "PASS" || this->_client->getIsAuth()) {
+            command->execute(*_serv, *_client, args);
+        }
+    }
     // else {
     //     // Handle unrecognized commands or just print the received command
     //     std::cout << this->_buff;

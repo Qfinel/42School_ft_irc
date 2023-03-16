@@ -95,8 +95,8 @@ void PrivmsgCommand::execute(IrcServ& server, IrcClient& client, const std::vect
     }
     std::string message = messageStream.str();
 
-    // Send a private message from the client to the specified target.
-    server.sendPrivateMessage(client, args[0], message);
+    // Send the message from the client to the specified target.
+    server.sendMessage(client, args[0], message);
 }
 
 // // Implement other command classes like PartCommand, QuitCommand, etc.

@@ -30,3 +30,7 @@ void IrcChannel::sendMessage(const std::string& message) {
         client->sendResponse(message);
     }
 }
+
+const std::vector<IrcClient*>& IrcChannel::getMembers() const {
+    return _clients;
+}

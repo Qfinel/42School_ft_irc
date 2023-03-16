@@ -208,3 +208,28 @@ void IrcServ::sendPrivateMessage(IrcClient& sender, const std::string& targetUse
     }
     // Target user not found; you can handle this case if needed.
 }
+
+void IrcServ::sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message) {
+    for (std::vector<IrcChannel>::iterator channel_it = _channels.begin(); channel_it != _channels.end(); ++channel_it) {
+        if (channel_it->getName() == channelName) {
+            std::string response = ":" + sender.getNickname() + " PRIVMSG " + channelName + " :" + message + "\r\n";
+            const std::vector<IrcClient*>& members = channel_it->getMembers();
+            for (std::vector<IrcClient*>::const_iterator client_it = members.begin(); client_it != members.end(); ++client_it) {
+                (*client_it)->sendResponse(response);
+            }
+            return;
+        }
+    }
+    // Channel not found; handle this case if needed.
+}
+
+
+// IrcServ.cpp
+void IrcServ::sendMessage(IrcClient& sender, const std::string& target, const std::string& message) {
+    // If the target starts with '#' or '&', it's a channel; otherwise, it's a user.
+    if (target[0] == '#' || target[0] == '&') {
+        sendChannelMessage(sender, target, message);
+    } else {
+        sendPrivateMessage(sender, target, message);
+    }
+}
