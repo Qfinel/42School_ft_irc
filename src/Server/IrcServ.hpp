@@ -22,6 +22,7 @@
 # include <map>
 # include <unistd.h>
 # include "IrcClient.hpp"
+# include "IrcChannel.hpp"
 
 class IrcServ
 {
@@ -33,7 +34,7 @@ class IrcServ
 	
 		std::vector<struct pollfd>	_fds;
 		std::map<int, IrcClient>	_clients;
-		// std::vector<IrcChannel>	_channels;
+		std::vector<IrcChannel>	_channels;
 
 	public:
 		IrcServ(char *port, char *pass);
@@ -45,6 +46,7 @@ class IrcServ
 		void handleDisconnect(int fd);
 		void handleConnect();
 		void receiveMessage(int fd);
+		void joinChannel(IrcClient &client, const std::string &channelName);
 
 };
 

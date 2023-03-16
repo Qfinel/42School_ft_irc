@@ -22,15 +22,15 @@ public:
     void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
 };
 
-// class UserCommand : public Command {
-// public:
-//     void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) override;
-// };
+class UserCommand : public Command {
+public:
+    void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
+};
 
-// class JoinCommand : public Command {
-// public:
-//     void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) override;
-// };
+class JoinCommand : public Command {
+public:
+    void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
+};
 
 // class PrivmsgCommand : public Command {
 // public:

@@ -14,15 +14,22 @@
 # define IRCCHANNEL_HPP
 
 # include <iostream>
+# include <vector>
+# include "IrcClient.hpp"
 
 class IrcChannel
 {
 	private:
 		std::string		_name;
-	
+		std::vector<IrcClient*>	_clients;
+
 	public:
 		IrcChannel(const std::string& name);
 		~IrcChannel();
+
+		const std::string& getName() const;
+		void addClient(IrcClient& client);
+		void sendMessage(const std::string& message);
 };
 
 #endif

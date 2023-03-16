@@ -25,6 +25,8 @@ class IrcClient
 		std::string	_nickname;
 		std::string	_username;
 		std::string	_realname;
+		std::string	_hostname;
+		std::string	_servername;
 
 	public:
 		IrcClient(int fd);
@@ -35,6 +37,10 @@ class IrcClient
 		bool	getIsAuth();
 		void	setAuth();
 		void	setNickname(std::string nickname);
+		void 	setUsername(std::string username);
+		void 	setRealname(std::string realname);
+		void 	setHostname(std::string hostname);
+		void 	setServername(std::string servername);
 };
 
 #endif

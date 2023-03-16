@@ -37,3 +37,11 @@ void IrcClient::sendResponse(std::string response)
 }
 
 void	IrcClient::setNickname(std::string nickname)	{this->_nickname = nickname;}
+
+void 	IrcClient::setUsername(std::string username)	{this->_username = username;}
+
+void 	IrcClient::setRealname(std::string realname)	{this->_realname = realname;}
+
+void 	IrcClient::setHostname(std::string hostname)	{this->_hostname = hostname;}
+
+void 	IrcClient::setServername(std::string servername)	{this->_servername = servername;}

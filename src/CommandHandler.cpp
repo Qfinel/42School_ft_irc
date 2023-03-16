@@ -53,6 +53,10 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
         return new PassCommand();
     } else if (commandName == "NICK") {
 		return new NickCommand();
+	} else if (commandName == "USER") {
+		return new UserCommand();
+	} else if (commandName == "JOIN") {
+		return new JoinCommand();
 	}
 	
     // Add other commands here, e.g. NICK, USER, JOIN, etc.

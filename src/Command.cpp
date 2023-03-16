@@ -20,10 +20,9 @@ void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
     }
 }
 
-void NickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
-    (void)server;
+void NickCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
 	if (args.size() != 1) {
-        // Send an error message to the client.
+        client.sendResponse("Usage: NICK <nickname>");
         return;
     }
     // Set the client's nickname and send a response.
@@ -31,22 +30,40 @@ void NickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
 	client.sendResponse("Your nickname is now " + args[0]);
 }
 
-// void UserCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
-//     if (args.size() != 4) {
-//         // Send an error message to the client.
-//         return;
-//     }
-//     // Set the client's username, real name, and other information.
-// }
+void UserCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() != 4) {
+        client.sendResponse("Usage: USER <username> <hostname> <servername> <realname>");
+        return;
+    }
+    
+    std::string username = args[0];
+    std::string hostname = args[1];
+    std::string servername = args[2];
+    std::string realname = args[3];
 
-// void JoinCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
-//     if (args.size() != 1) {
-//         // Send an error message to the client.
-//         return;
-//     }
-//     // Make the client join the specified channel.
-//     server.joinChannel(client, args[0]);
-// }
+    // Set the client's username, real name, and other information.
+    client.setUsername(username);
+    client.setHostname(hostname);
+    client.setServername(servername);
+    client.setRealname(realname);
+
+    // Sending a welcome message
+	client.sendResponse("Welcome to the Internet Relay Network " + username + "!");
+
+	// Sending your host message
+	client.sendResponse("Your host is " + servername + ", running version 1.0");
+
+
+}
+
+void JoinCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() != 1) {
+        // Send an error message to the client.
+        return;
+    }
+    // Make the client join the specified channel.
+    server.joinChannel(client, args[0]);
+}
 
 // void PrivmsgCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
 //     if (args.size() < 2) {

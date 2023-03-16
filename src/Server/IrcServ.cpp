@@ -167,3 +167,33 @@ void IrcServ::start()
 		}
 	}
 }
+
+class ChannelNameMatcher {
+public:
+    ChannelNameMatcher(const std::string& channelName) : _channelName(channelName) {}
+
+    bool operator()(const IrcChannel& channel) const {
+        return channel.getName() == _channelName;
+    }
+
+private:
+    std::string _channelName;
+};
+
+void IrcServ::joinChannel(IrcClient &client, const std::string &channelName) {
+    // Check if the channel exists; if not, create it
+    std::vector<IrcChannel>::iterator it = std::find_if(_channels.begin(), _channels.end(), ChannelNameMatcher(channelName));
+
+    // If the channel doesn't exist, create a new one and add it to the _channels vector
+    if (it == _channels.end()) {
+        IrcChannel newChannel(channelName);
+        newChannel.addClient(client);
+        _channels.push_back(newChannel);
+    } else {
+        // Add the client to the existing channel
+        it->addClient(client);
+    }
+
+    // Notify the client that they have joined the channel
+    client.sendResponse("You have joined the channel: " + channelName);
+}
