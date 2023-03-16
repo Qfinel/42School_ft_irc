@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/14 17:06:52 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/16 13:14:38 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void IrcServ::handleConnect()
 
 	try
 	{
-		new_client.sendResponse("Welcome on board! Please provide a server password using PASS command");
+		new_client.sendResponse("001 " + new_client.getNickname() + " :Welcome on board! Please provide a server password using PASS command");
 	}
 	catch (const std::runtime_error& e)
 	{

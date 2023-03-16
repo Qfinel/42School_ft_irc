@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 12:00:17 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/14 17:02:30 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/16 13:13:43 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,3 +37,5 @@ void IrcClient::sendResponse(std::string response)
 }
 
 void	IrcClient::setNickname(std::string nickname)	{this->_nickname = nickname;}
+
+std::string	&IrcClient::getNickname()	{return (this->_nickname);}
