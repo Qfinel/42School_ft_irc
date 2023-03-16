@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 11:46:18 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/16 13:12:51 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/16 15:07:19 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ class IrcClient
 		std::string	_nickname;
 		std::string	_username;
 		std::string	_realname;
+		std::string	_hostname;
+		std::string	_servername;
 
 	public:
 		IrcClient(int fd);
@@ -35,7 +37,11 @@ class IrcClient
 		bool	getIsAuth();
 		void	setAuth();
 		void	setNickname(std::string nickname);
-		std::string 	&getNickname();
+		void 	setUsername(std::string username);
+		void 	setRealname(std::string realname);
+		void 	setHostname(std::string hostname);
+		void 	setServername(std::string servername);
+		std::string &getNickname();
 };
 
 #endif

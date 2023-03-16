@@ -15,13 +15,15 @@ NAME = ircserv
 HDRS =	src/CommandHandler.hpp \
 		src/Server/IrcClient.hpp \
 		src/Server/IrcServ.hpp \
-		src/Command.hpp
+		src/Command.hpp \
+		src/Server/IrcChannel.hpp
 
 OBJS =	obj/CommandHandler.o \
 		obj/IrcClient.o \
 		obj/IrcServ.o \
 		obj/main.o \
-		obj/Command.o
+		obj/Command.o \
+		obj/IrcChannel.o
 
 obj/%.o: src/%.cpp
 	c++ -c -Wall -Wextra -Werror -std=c++98 $< -o $@
