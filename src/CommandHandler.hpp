@@ -16,9 +16,10 @@
 # include <iostream>
 # include <string>
 # include <sstream>
-# include "Server/IrcServ.hpp"
 
 class IrcServ;
+class IrcClient;
+class Command;
 
 class CommandHandler
 {
@@ -29,6 +30,7 @@ class CommandHandler
 	public:
 		CommandHandler(IrcServ *serv, IrcClient *cl, std::string buffer);
 		~CommandHandler();
+		Command* getCommand(const std::string& commandName);
 	
 		void handle();
 };

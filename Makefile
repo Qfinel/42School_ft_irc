@@ -14,12 +14,14 @@ NAME = ircserv
 
 HDRS =	src/CommandHandler.hpp \
 		src/Server/IrcClient.hpp \
-		src/Server/IrcServ.hpp
+		src/Server/IrcServ.hpp \
+		src/Command.hpp
 
 OBJS =	obj/CommandHandler.o \
 		obj/IrcClient.o \
 		obj/IrcServ.o \
-		obj/main.o
+		obj/main.o \
+		obj/Command.o
 
 obj/%.o: src/%.cpp
 	c++ -c -Wall -Wextra -Werror -std=c++98 $< -o $@

@@ -35,3 +35,5 @@ void IrcClient::sendResponse(std::string response)
 	if (send(this->_fd, msg.c_str(), msg.length(), 0) < 0)
 		throw std::runtime_error("Failed sending response to the client");
 }
+
+void	IrcClient::setNickname(std::string nickname)	{this->_nickname = nickname;}

@@ -34,6 +34,7 @@ class IrcClient
 		void	sendResponse(std::string response);
 		bool	getIsAuth();
 		void	setAuth();
+		void	setNickname(std::string nickname);
 };
 
 #endif

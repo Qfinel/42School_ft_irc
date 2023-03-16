@@ -22,7 +22,6 @@
 # include <map>
 # include <unistd.h>
 # include "IrcClient.hpp"
-# include "../CommandHandler.hpp"
 
 class IrcServ
 {

@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "IrcServ.hpp"
+# include "../CommandHandler.hpp"
 
 IrcServ::IrcServ(char *port, char *pass) : _port(atoi(port)), _pass(pass)
 {
