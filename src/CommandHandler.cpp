@@ -68,6 +68,34 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
     return NULL;
 }
 
+// void CommandHandler::handle() {
+//     std::istringstream iss(this->_buff);
+//     std::string commandName, word;
+//     std::vector<std::string> args;
+
+//     iss >> commandName;
+//     while (iss >> word) {
+//         args.push_back(word);
+//     }
+
+//     Command* command = getCommand(commandName);
+//     this->_comm = command;
+
+//     std::cout << this->_buff; //for debugging
+
+//     if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT") {
+//         this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
+//     } else if (command != NULL) {
+//         if (commandName == "PASS" || this->_client->getIsAuth()) {
+//             command->execute(*_serv, *_client, args);
+//         }
+//     }
+//     // else {
+//     //     // Handle unrecognized commands or just print the received command
+//     //     std::cout << this->_buff;
+//     // }
+// }
+
 void CommandHandler::handle() {
     std::istringstream iss(this->_buff);
     std::string commandName, word;
@@ -81,14 +109,16 @@ void CommandHandler::handle() {
     Command* command = getCommand(commandName);
     this->_comm = command;
 
-    std::cout << this->_buff; //for debugging
+    std::cout << this->_buff; // for debugging
 
-    if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT" && commandName != "NICK") {
+    if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT") {
         this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
     } else if (command != NULL) {
-        if (commandName == "PASS" || this->_client->getIsAuth()) {
-            command->execute(*_serv, *_client, args);
-        }
+            if ((commandName != "USER" && commandName != "NICK" && commandName != "PASS") && !this->_client->getUserAndNickSet()) {
+                this->_client->sendResponse("461 " + this->_client->getNickname() + " :Please set both USER and NICK before using other commands");
+            } else {
+                command->execute(*_serv, *_client, args);
+            }
     }
     // else {
     //     // Handle unrecognized commands or just print the received command

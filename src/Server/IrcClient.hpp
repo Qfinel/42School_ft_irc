@@ -47,6 +47,8 @@ class IrcClient
         std::string getRealname();
         std::string getHostname();
         std::string getServername();
+
+        bool getUserAndNickSet() const;
 };
 
 #endif

@@ -45,15 +45,24 @@ void QuitCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
 //     // Set the client's username, real name, and other information.
 // }
 void UserCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
-    if (args.size() != 4) {
+    if (args.size() < 4) {
         client.sendResponse("Usage: USER <username> <hostname> <servername> <realname>");
         return;
     }
-    
+
     std::string username = args[0];
     std::string hostname = args[1];
     std::string servername = args[2];
-    std::string realname = args[3];
+
+    // Find the colon (:) to parse the real name.
+    size_t colonPos = args[3].find(':');
+    std::string realname;
+
+    if (colonPos != 0) {
+        realname = args[3];
+    } else {
+        realname = args[3].substr(colonPos + 1);
+    }
 
     // Set the client's username, real name, and other information.
     client.setUsername(username);
@@ -62,13 +71,13 @@ void UserCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::st
     client.setRealname(realname);
 
     // Sending a welcome message
-	client.sendResponse("Welcome to the Internet Relay Network " + username + "!");
+    client.sendResponse("Welcome to the Internet Relay Network " + username + "!");
 
-	// Sending your host message
-	client.sendResponse("Your host is " + servername + ", running version 1.0");
-
-
+    // Sending your host message
+    client.sendResponse("Your host is " + servername + ", running version 1.0");
 }
+
+
 
 void JoinCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() != 1) {
@@ -85,18 +94,24 @@ void PrivmsgCommand::execute(IrcServ& server, IrcClient& client, const std::vect
         return;
     }
 
-    // Concatenate all arguments after the first one as the message.
-    std::ostringstream messageStream;
-    for (size_t i = 1; i < args.size(); ++i) {
-        messageStream << args[i];
-        if (i < args.size() - 1) {
-            messageStream << " ";
+    // Find the colon (:) to parse the message.
+    size_t colonPos = args[1].find(':');
+    std::string message;
+
+    if (colonPos != 0) {
+        message = args[1];
+    } else {
+        message = args[1].substr(colonPos + 1);
+        for (size_t i = 2; i < args.size(); ++i) {
+            message += " " + args[i];
         }
     }
-    std::string message = messageStream.str();
 
     // Send the message from the client to the specified target.
     server.sendMessage(client, args[0], message);
 }
+
+// // Implement other command classes like PartCommand, QuitCommand, etc.
+
 
 // // Implement other command classes like PartCommand, QuitCommand, etc.

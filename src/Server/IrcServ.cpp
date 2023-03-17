@@ -223,8 +223,6 @@ void IrcServ::sendChannelMessage(IrcClient& sender, const std::string& channelNa
     // Channel not found; handle this case if needed.
 }
 
-
-// IrcServ.cpp
 void IrcServ::sendMessage(IrcClient& sender, const std::string& target, const std::string& message) {
     // If the target starts with '#' or '&', it's a channel; otherwise, it's a user.
     if (target[0] == '#' || target[0] == '&') {
@@ -232,4 +230,8 @@ void IrcServ::sendMessage(IrcClient& sender, const std::string& target, const st
     } else {
         sendPrivateMessage(sender, target, message);
     }
+}
+
+bool IrcClient::getUserAndNickSet() const {
+    return !_username.empty() && !_nickname.empty();
 }
