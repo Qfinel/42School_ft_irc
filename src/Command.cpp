@@ -111,6 +111,17 @@ void PrivmsgCommand::execute(IrcServ& server, IrcClient& client, const std::vect
     server.sendMessage(client, args[0], message);
 }
 
+void NoticeCommand::execute(IrcServ& ircServ, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() < 2) {
+        client.sendResponse("461 :Not enough arguments for NOTICE command");
+        return ;
+    }
+    const std::string& target = args[0];
+    const std::string& message = args[1];
+
+    ircServ.sendMessage(client, target, message);
+}
+
 // // Implement other command classes like PartCommand, QuitCommand, etc.
 
 

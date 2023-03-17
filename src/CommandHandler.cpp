@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/16 15:05:20 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/17 19:15:14 by hngo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,9 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
 		return new JoinCommand();
 	} else if (commandName == "PRIVMSG") {
         return new PrivmsgCommand();
+    } else if (commandName == "NOTICE") {
+        return new NoticeCommand();
     }
-	
     // Add other commands here, e.g. NICK, USER, JOIN, etc.
     return NULL;
 }

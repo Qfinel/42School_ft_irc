@@ -42,4 +42,10 @@ public:
     void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
 };
 
+class NoticeCommand : public Command {
+public:
+    virtual void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
+};
+
+
 // // Add other command classes like PartCommand, QuitCommand, etc.
