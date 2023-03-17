@@ -5,21 +5,22 @@
 
 void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() != 1) {
-        client.sendResponse("Invalid number of arguments for PASS command");
+        client.sendResponse("461 PASS :Not enough parameters"); // 461: ERR_NEEDMOREPARAMS
         return;
     }
     
     if (!client.getIsAuth()) {
         if (args[0] == server.getPass()) {
-            client.sendResponse("Congratulations! You are authenticated!");
+            client.sendResponse("001 " + client.getNickname() + " :Welcome to the Internet Relay Network " + client.getNickname()); // 001: RPL_WELCOME
             client.setAuth();
         } else {
-            client.sendResponse("464 * :It's a wrong password ;(");
+            client.sendResponse("464 " + client.getNickname() + " :Password incorrect"); // 464: ERR_PASSWDMISMATCH
         }
     } else {
-        client.sendResponse("You are already authenticated.");
+        client.sendResponse("462 " + client.getNickname() + " :You may not reregister"); // 462: ERR_ALREADYREGISTRED
     }
 }
+
 
 void NickCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
 	if (args.size() != 1) {

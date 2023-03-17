@@ -26,29 +26,6 @@ CommandHandler::CommandHandler(IrcServ *serv, IrcClient *cl, std::string buffer)
 
 CommandHandler::~CommandHandler()	{delete this->_comm;}
 
-// void CommandHandler::handle()
-// {
-// 	std::istringstream	iss(this->_comm);
-// 	std::string word1, word2;
-// 	iss >> word1 >> word2;
-
-// 	if (!this->_client->getIsAuth() && strcmp("PASS", word1.c_str()))
-// 		this->_client->sendResponse("Please provide a server password using PASS command");
-// 	else if (!this->_client->getIsAuth() && !strcmp("PASS", word1.c_str()))
-// 	{
-// 		if (!strcmp(word2.c_str(), this->_serv->getPass().c_str()))
-// 		{
-// 			this->_client->sendResponse("Congratualtions! You are authenticated!");
-// 			this->_client->setAuth();
-// 		}
-// 		else
-// 			this->_client->sendResponse("It's a wrong password ;(");
-// 	}
-// 	else
-// 		std::cout << this->_comm;
-// }
-
-
 Command* CommandHandler::getCommand(const std::string& commandName) {
     if (commandName == "PASS") {
         return new PassCommand();
@@ -81,19 +58,52 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
 //     Command* command = getCommand(commandName);
 //     this->_comm = command;
 
-//     std::cout << this->_buff; //for debugging
+//     std::cout << this->_buff; // for debugging
 
 //     if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT") {
 //         this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
 //     } else if (command != NULL) {
-//         if (commandName == "PASS" || this->_client->getIsAuth()) {
-//             command->execute(*_serv, *_client, args);
-//         }
+//             if ((commandName != "USER" && commandName != "NICK" && commandName != "PASS" && commandName != "QUIT") && !this->_client->getUserAndNickSet()) {
+//                 this->_client->sendResponse("461 " + this->_client->getNickname() + " :Please set both USER and NICK before using other commands");
+//             } else {
+//                 command->execute(*_serv, *_client, args);
+//             }
 //     }
 //     // else {
 //     //     // Handle unrecognized commands or just print the received command
 //     //     std::cout << this->_buff;
 //     // }
+// }
+
+// void CommandHandler::handle() {
+//     std::istringstream iss(this->_buff);
+//     std::string commandName, word;
+//     std::vector<std::string> args;
+
+//     iss >> commandName;
+//     while (iss >> word) {
+//         args.push_back(word);
+//     }
+
+//     Command* command = getCommand(commandName);
+//     this->_comm = command;
+
+//     std::cout << this->_buff; // for debugging
+
+//     if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT") {
+//         this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
+//     } else if (command != NULL) {
+//             if ((commandName != "USER" && commandName != "NICK" && commandName != "PASS" && commandName != "QUIT") && !this->_client->getUserAndNickSet()) {
+//                 this->_client->sendResponse("461 " + this->_client->getNickname() + " :Please set both USER and NICK before using other commands");
+//             } else {
+//                 command->execute(*_serv, *_client, args);
+//             }
+//     } else {
+//         // // Handle unrecognized commands or just print the received command
+//         // if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT") {
+//         //     this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
+//         // }
+//     }
 // }
 
 void CommandHandler::handle() {
@@ -111,17 +121,15 @@ void CommandHandler::handle() {
 
     std::cout << this->_buff; // for debugging
 
-    if (!this->_client->getIsAuth() && commandName != "PASS" && commandName != "QUIT") {
-        this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
+    if (!this->_client->getIsAuth() && (commandName != "PASS" && commandName != "QUIT" && command != NULL)) {
+        this->_client->sendResponse("NOTICE " + this->_client->getNickname() + " :Please provide a server password using PASS command");
     } else if (command != NULL) {
-            if ((commandName != "USER" && commandName != "NICK" && commandName != "PASS") && !this->_client->getUserAndNickSet()) {
+            if ((commandName != "USER" && commandName != "NICK" && commandName != "PASS" && commandName != "QUIT") && !this->_client->getUserAndNickSet()) {
                 this->_client->sendResponse("461 " + this->_client->getNickname() + " :Please set both USER and NICK before using other commands");
             } else {
                 command->execute(*_serv, *_client, args);
             }
+    } else {
+        // Handle unrecognized commands or just print the received command
     }
-    // else {
-    //     // Handle unrecognized commands or just print the received command
-    //     std::cout << this->_buff;
-    // }
 }
