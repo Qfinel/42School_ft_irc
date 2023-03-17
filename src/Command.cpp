@@ -117,10 +117,25 @@ void NoticeCommand::execute(IrcServ& ircServ, IrcClient& client, const std::vect
         client.sendResponse("461 :Not enough arguments for NOTICE command");
         return ;
     }
-    const std::string& target = args[0];
-    const std::string& message = args[1];
+    // Find the colon (:) to parse the message.
+    size_t colonPos = args[1].find(':');
+    std::string message;
 
-    ircServ.sendMessage(client, target, message);
+    if (colonPos != 0) {
+        message = args[1];
+    } else {
+        message = args[1].substr(colonPos + 1);
+        for (size_t i = 2; i < args.size(); ++i) {
+            message += " " + args[i];
+        }
+    }
+
+    // const std::string& target = args[0];
+    // const std::string& message = args[1];
+
+    // ircServ.sendMessage(client, target, message);
+        // Send the message from the client to the specified target.
+    ircServ.sendMessage(client, args[0], message);
 }
 
 // // Implement other command classes like PartCommand, QuitCommand, etc.
