@@ -161,7 +161,11 @@ void NoticeCommand::execute(IrcServ& ircServ, IrcClient& client, const std::vect
     ircServ.sendMessage(client, args[0], message);
 }
 
-// // Implement other command classes like PartCommand, QuitCommand, etc.
-
-
-// // Implement other command classes like PartCommand, QuitCommand, etc.
+void PingCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() < 1) {
+        // Send an error message to the client.
+        return;
+    }
+    // Send a PONG response to the client.
+     client.sendResponse("PONG " + client.getNickname() + " 127.0.0.1");
+}

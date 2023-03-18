@@ -41,6 +41,8 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
         return new PrivmsgCommand();
     } else if (commandName == "NOTICE") {
         return new NoticeCommand();
+    } else if (commandName == "PING") {
+        return new PingCommand();
     }
     // Add other commands here, e.g. NICK, USER, JOIN, etc.
     return NULL;
