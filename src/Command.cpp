@@ -4,17 +4,29 @@
 #include <sstream>
 
 void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
-    if (args.size() != 1) {
+    // Find the colon (:) to parse the password.
+    size_t colonPos = args[0].find(':');
+    std::string password;
+
+    if (colonPos != 0) {
+        password = args[0];
+    } else {
+        password = args[0].substr(colonPos + 1);
+        for (size_t i = 1; i < args.size(); ++i) {
+            password += " " + args[i];
+        }
+    }
+
+    if (args.size() < 1) {
         client.sendResponse("461 PASS :Not enough parameters"); // 461: ERR_NEEDMOREPARAMS
         return;
     }
     
     if (!client.getIsAuth()) {
-        if (args[0] == server.getPass()) {
-            client.sendResponse("001 " + client.getNickname() + " :Welcome to the Internet Relay Network " + client.getNickname()); // 001: RPL_WELCOME
+        if (password == server.getPass()) {
             client.setAuth();
         } else {
-            client.sendResponse("464 " + client.getNickname() + " :Password incorrect"); // 464: ERR_PASSWDMISMATCH
+            client.sendResponse("464 " + client.getNickname() + " :Password incorrect " + password + " END"); // 464: ERR_PASSWDMISMATCH
         }
     } else {
         client.sendResponse("462 " + client.getNickname() + " :You may not reregister"); // 462: ERR_ALREADYREGISTRED
@@ -30,7 +42,11 @@ void NickCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::st
 
     // Set the client's nickname and send a response.
     client.setNickname(args[0]);
-	client.sendResponse("Your nickname is now " + args[0]);
+	// client.sendResponse("Your nickname is now " + args[0]);
+    if (client.getUserAndNickSet()) {
+        client.sendResponse("001 " + client.getNickname() + " :Welcome to the Internet Relay Network " + client.getNickname()); // 001: RPL_WELCOME
+        client.sendResponse("002 " + client.getNickname() + " :Your host is " + client.getServername() + ", running version 1.0"); // 002: RPL_YOURHOST
+    }
 }
 
 void QuitCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
@@ -60,9 +76,12 @@ void UserCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::st
     std::string realname;
 
     if (colonPos != 0) {
-        realname = args[3];
+        realname = args[1];
     } else {
-        realname = args[3].substr(colonPos + 1);
+        realname = args[1].substr(colonPos + 1);
+        for (size_t i = 2; i < args.size(); ++i) {
+            realname += " " + args[i];
+        }
     }
 
     // Set the client's username, real name, and other information.
@@ -72,10 +91,14 @@ void UserCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::st
     client.setRealname(realname);
 
     // Sending a welcome message
-    client.sendResponse("Welcome to the Internet Relay Network " + username + "!");
+    // client.sendResponse("Welcome to the Internet Relay Network " + username + "!");
+    if (client.getUserAndNickSet()) {
+        client.sendResponse("001 " + client.getNickname() + " :Welcome to the Internet Relay Network " + client.getNickname()); // 001: RPL_WELCOME
+        client.sendResponse("002 " + client.getNickname() + " :Your host is " + servername + ", running version 1.0"); // 002: RPL_YOURHOST
+    }
 
     // Sending your host message
-    client.sendResponse("Your host is " + servername + ", running version 1.0");
+    // client.sendResponse("Your host is " + servername + ", running version 1.0");
 }
 
 
