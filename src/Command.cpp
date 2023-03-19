@@ -4,6 +4,10 @@
 #include <sstream>
 
 void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() < 1) {
+        client.sendResponse("461 PASS :Not enough parameters"); // 461: ERR_NEEDMOREPARAMS
+        return;
+    }
     // Find the colon (:) to parse the password.
     size_t colonPos = args[0].find(':');
     std::string password;
@@ -15,11 +19,6 @@ void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         for (size_t i = 1; i < args.size(); ++i) {
             password += " " + args[i];
         }
-    }
-
-    if (args.size() < 1) {
-        client.sendResponse("461 PASS :Not enough parameters"); // 461: ERR_NEEDMOREPARAMS
-        return;
     }
     
     if (!client.getIsAuth()) {
