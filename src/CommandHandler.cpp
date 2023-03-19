@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/17 19:15:14 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/19 16:52:51 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ void CommandHandler::handle() {
         this->_comm = command;
 
 
-        if (!this->_client->getIsAuth() && (commandName != "PASS" && commandName != "QUIT" && command != NULL)) {
+        if (!this->_client->getIsAuth() && (commandName != "PASS" && commandName != "NICK" && commandName != "QUIT" && command != NULL)) {
             this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
         } else if (command != NULL) {
                 if ((commandName != "USER" && commandName != "NICK" && commandName != "PASS" && commandName != "QUIT") && !this->_client->getUserAndNickSet()) {

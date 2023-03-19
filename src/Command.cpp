@@ -25,7 +25,7 @@ void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         if (password == server.getPass()) {
             client.setAuth();
         } else {
-            client.sendResponse("464 " + client.getNickname() + " :Password incorrect " + password + " END"); // 464: ERR_PASSWDMISMATCH
+            client.sendResponse("464 " + client.getNickname() + " :Password incorrect "); // 464: ERR_PASSWDMISMATCH
         }
     } else {
         client.sendResponse("462 " + client.getNickname() + " :You may not reregister"); // 462: ERR_ALREADYREGISTRED
