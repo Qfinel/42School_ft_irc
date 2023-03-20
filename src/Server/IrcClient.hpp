@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcClient.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 11:46:18 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/16 15:07:19 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/20 01:42:42 by hngo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class IrcClient
 		~IrcClient();
 
 		int		getFd();
-		void	sendResponse(std::string response);
+		void	sendResponse(const std::string& response) const;
 		bool	getIsAuth();
 		void	setAuth();
 		void	setNickname(std::string nickname);
@@ -42,7 +42,7 @@ class IrcClient
 		void 	setHostname(std::string hostname);
 		void 	setServername(std::string servername);
         
-        std::string getNickname();
+        const std::string getNickname() const;
         std::string getUsername();
         std::string getRealname();
         std::string getHostname();

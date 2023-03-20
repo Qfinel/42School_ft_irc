@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/19 16:52:51 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/20 01:37:23 by hngo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
         return new NoticeCommand();
     } else if (commandName == "PING") {
         return new PingCommand();
+    } else if (commandName == "KICK") {
+        return new KickCommand();
     }
     // Add other commands here, e.g. NICK, USER, JOIN, etc.
     return NULL;

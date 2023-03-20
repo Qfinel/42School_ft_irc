@@ -168,3 +168,30 @@ void PingCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::st
     // Send a PONG response to the client.
      client.sendResponse("PONG " + client.getNickname() + " 127.0.0.1");
 }
+
+void KickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() < 2) {
+        // Send an error message to the client.
+        client.sendResponse("461 KICK :Not enough parameters"); // 461: ERR_NEEDMOREPARAMS
+        return;
+    }
+
+    std::string channel = args[0];
+    std::string nickname = args[1];
+
+    if (server.channelExists(channel)) {
+        if (server.channelHasClient(channel, client)) {
+            const IrcChannel& ircChannel = server.getChannelByName(channel);
+            const IrcClient* nicknameClient = ircChannel.getClientByName(nickname);
+            if (nicknameClient != &client) { // check if the client to be kicked is not the one issuing the command
+                server.kickClientFromChannel(*nicknameClient, channel);
+            } else {
+                client.sendResponse(client.getNickname() + " " + channel + " :You can't kick yourself");
+            }
+        } else {
+            client.sendResponse("442 " + client.getNickname() + " " + channel + " :You're not on that channel"); // 442: ERR_NOTONCHANNEL
+        }
+    } else {
+        client.sendResponse("402 " + client.getNickname() + " " + channel + " :No such channel"); // 402: ERR_NOSUCHCHANNEL
+    }
+}
