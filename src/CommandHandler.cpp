@@ -28,23 +28,23 @@ CommandHandler::~CommandHandler()	{delete this->_comm;}
 
 Command* CommandHandler::getCommand(const std::string& commandName) {
     if (commandName == "PASS") {
-        return new PassCommand();
+        return new PassCommand(*_serv);
     } else if (commandName == "NICK") {
-		return new NickCommand();
+		return new NickCommand(*_serv);
 	} else if (commandName == "QUIT") {
-		return new QuitCommand();
+		return new QuitCommand(*_serv);
 	} else if (commandName == "USER") {
-		return new UserCommand();
+		return new UserCommand(*_serv);
 	} else if (commandName == "JOIN") {
-		return new JoinCommand();
+		return new JoinCommand(*_serv);
 	} else if (commandName == "PRIVMSG") {
-        return new PrivmsgCommand();
+        return new PrivmsgCommand(*_serv);
     } else if (commandName == "NOTICE") {
-        return new NoticeCommand();
+        return new NoticeCommand(*_serv);
     } else if (commandName == "PING") {
-        return new PingCommand();
+        return new PingCommand(*_serv);
     } else if (commandName == "KICK") {
-        return new KickCommand();
+        return new KickCommand(*_serv);
     }
     // Add other commands here, e.g. NICK, USER, JOIN, etc.
     return NULL;

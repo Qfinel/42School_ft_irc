@@ -53,13 +53,6 @@ void QuitCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
     server.handleDisconnect(client.getFd());
 }
 
-// void UserCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
-//     if (args.size() != 4) {
-//         // Send an error message to the client.
-//         return;
-//     }
-//     // Set the client's username, real name, and other information.
-// }
 void UserCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() < 4) {
         client.sendResponse("Usage: USER <username> <hostname> <servername> <realname>");
@@ -100,18 +93,68 @@ void UserCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::st
     // client.sendResponse("Your host is " + servername + ", running version 1.0");
 }
 
+void JoinCommand::joinChannel(IrcClient &client, const std::string &channelName) {
+    // Check if the channel exists; if not, create it
+    std::vector<IrcChannel>::iterator it = std::find_if(_server.getChannels().begin(), _server.getChannels().end(), ChannelNameMatcher(channelName));
 
+    // If the channel doesn't exist, create a new one and add it to the _channels vector
+    if (it == _server.getChannels().end()) {
+        IrcChannel newChannel(channelName);
+        newChannel.addClient(client);
+        _server.getChannels().push_back(newChannel);
+    } else {
+        // Add the client to the existing channel
+        it->addClient(client);
+    }
 
-void JoinCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    // Notify the client that they have joined the channel
+    client.sendResponse("You have joined the channel: " + channelName);
+}
+
+void JoinCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() != 1) {
         // Send an error message to the client.
         return;
     }
     // Make the client join the specified channel.
-    server.joinChannel(client, args[0]);
+    joinChannel(client, args[0]);
 }
 
-void PrivmsgCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+void PrivmsgCommand::sendPrivateMessage(IrcClient& sender, const std::string& targetUser, const std::string& message) {
+    for (std::map<int, IrcClient>::iterator it = _server.getClients().begin(); it != _server.getClients().end(); ++it) {
+        if (it->second.getNickname() == targetUser) {
+            std::string response = ":" + sender.getNickname() + " PRIVMSG " + targetUser + " :" + message + "\r\n";
+            it->second.sendResponse(response);
+            return;
+        }
+    }
+    // Target user not found; you can handle this case if needed.
+}
+
+void PrivmsgCommand::sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message) {
+    for (std::vector<IrcChannel>::iterator channel_it = _server.getChannels().begin(); channel_it != _server.getChannels().end(); ++channel_it) {
+        if (channel_it->getName() == channelName) {
+            std::string response = ":" + sender.getNickname() + " PRIVMSG " + channelName + " :" + message + "\r\n";
+            const std::vector<IrcClient*>& members = channel_it->getMembers();
+            for (std::vector<IrcClient*>::const_iterator client_it = members.begin(); client_it != members.end(); ++client_it) {
+                (*client_it)->sendResponse(response);
+            }
+            return;
+        }
+    }
+    // Channel not found; handle this case if needed.
+}
+
+void PrivmsgCommand::sendMessage(IrcClient& sender, const std::string& target, const std::string& message) {
+    // If the target starts with '#' or '&', it's a channel; otherwise, it's a user.
+    if (target[0] == '#' || target[0] == '&') {
+        sendChannelMessage(sender, target, message);
+    } else {
+        sendPrivateMessage(sender, target, message);
+    }
+}
+
+void PrivmsgCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() < 2) {
         // Send an error message to the client.
         return;
@@ -131,10 +174,46 @@ void PrivmsgCommand::execute(IrcServ& server, IrcClient& client, const std::vect
     }
 
     // Send the message from the client to the specified target.
-    server.sendMessage(client, args[0], message);
+    sendMessage(client, args[0], message);
 }
 
-void NoticeCommand::execute(IrcServ& ircServ, IrcClient& client, const std::vector<std::string>& args) {
+void NoticeCommand::sendPrivateMessage(IrcClient& sender, const std::string& targetUser, const std::string& message) {
+    for (std::map<int, IrcClient>::iterator it = _server.getClients().begin(); it != _server.getClients().end(); ++it) {
+        if (it->second.getNickname() == targetUser) {
+            std::string response = ":" + sender.getNickname() + " NOTICE " + targetUser + " :" + message + "\r\n";
+            it->second.sendResponse(response);
+            return;
+        }
+    }
+    // Target user not found; you can handle this case if needed.
+}
+
+void NoticeCommand::sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message) {
+    for (std::vector<IrcChannel>::iterator channel_it = _server.getChannels().begin(); channel_it != _server.getChannels().end(); ++channel_it) {
+        if (channel_it->getName() == channelName) {
+            std::string response = ":" + sender.getNickname() + " NOTICE " + channelName + " :" + message + "\r\n";
+            const std::vector<IrcClient*>& members = channel_it->getMembers();
+            for (std::vector<IrcClient*>::const_iterator client_it = members.begin(); client_it != members.end(); ++client_it) {
+                (*client_it)->sendResponse(response);
+            }
+            return;
+        }
+    }
+    // Channel not found; handle this case if needed.
+}
+
+void NoticeCommand::sendMessage(IrcClient& sender, const std::string& target, const std::string& message) {
+    // If the target starts with '#' or '&', it's a channel; otherwise, it's a user.
+    if (target[0] == '#' || target[0] == '&') {
+        sendChannelMessage(sender, target, message);
+    } else {
+        sendPrivateMessage(sender, target, message);
+    }
+}
+
+
+
+void NoticeCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() < 2) {
         client.sendResponse("461 :Not enough arguments for NOTICE command");
         return ;
@@ -157,7 +236,7 @@ void NoticeCommand::execute(IrcServ& ircServ, IrcClient& client, const std::vect
 
     // ircServ.sendMessage(client, target, message);
         // Send the message from the client to the specified target.
-    ircServ.sendMessage(client, args[0], message);
+    sendMessage(client, args[0], message);
 }
 
 void PingCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {

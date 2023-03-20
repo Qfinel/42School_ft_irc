@@ -23,6 +23,10 @@ IrcServ::~IrcServ()	{}
 
 std::string	IrcServ::getPass()	{return (this->_pass);}
 
+std::vector<IrcChannel>& IrcServ::getChannels()	{return (this->_channels);}
+
+std::map<int, IrcClient>& IrcServ::getClients()	{return (this->_clients);}
+
 void IrcServ::handleDisconnect(int fd)
 {
 	std::cout << "Client disconnected!" << std::endl;
@@ -179,58 +183,6 @@ public:
 private:
     std::string _channelName;
 };
-
-void IrcServ::joinChannel(IrcClient &client, const std::string &channelName) {
-    // Check if the channel exists; if not, create it
-    std::vector<IrcChannel>::iterator it = std::find_if(_channels.begin(), _channels.end(), ChannelNameMatcher(channelName));
-
-    // If the channel doesn't exist, create a new one and add it to the _channels vector
-    if (it == _channels.end()) {
-        IrcChannel newChannel(channelName);
-        newChannel.addClient(client);
-        _channels.push_back(newChannel);
-    } else {
-        // Add the client to the existing channel
-        it->addClient(client);
-    }
-
-    // Notify the client that they have joined the channel
-    client.sendResponse("You have joined the channel: " + channelName);
-}
-
-void IrcServ::sendPrivateMessage(IrcClient& sender, const std::string& targetUser, const std::string& message) {
-    for (std::map<int, IrcClient>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-        if (it->second.getNickname() == targetUser) {
-            std::string response = ":" + sender.getNickname() + " PRIVMSG " + targetUser + " :" + message + "\r\n";
-            it->second.sendResponse(response);
-            return;
-        }
-    }
-    // Target user not found; you can handle this case if needed.
-}
-
-void IrcServ::sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message) {
-    for (std::vector<IrcChannel>::iterator channel_it = _channels.begin(); channel_it != _channels.end(); ++channel_it) {
-        if (channel_it->getName() == channelName) {
-            std::string response = ":" + sender.getNickname() + " PRIVMSG " + channelName + " :" + message + "\r\n";
-            const std::vector<IrcClient*>& members = channel_it->getMembers();
-            for (std::vector<IrcClient*>::const_iterator client_it = members.begin(); client_it != members.end(); ++client_it) {
-                (*client_it)->sendResponse(response);
-            }
-            return;
-        }
-    }
-    // Channel not found; handle this case if needed.
-}
-
-void IrcServ::sendMessage(IrcClient& sender, const std::string& target, const std::string& message) {
-    // If the target starts with '#' or '&', it's a channel; otherwise, it's a user.
-    if (target[0] == '#' || target[0] == '&') {
-        sendChannelMessage(sender, target, message);
-    } else {
-        sendPrivateMessage(sender, target, message);
-    }
-}
 
 bool IrcClient::getUserAndNickSet() const {
     return !_username.empty() && !_nickname.empty();

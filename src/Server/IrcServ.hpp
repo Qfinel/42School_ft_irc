@@ -41,15 +41,13 @@ class IrcServ
 		~IrcServ();
 
 		std::string	getPass();
+        std::vector<IrcChannel>& getChannels();
+        std::map<int, IrcClient>& getClients();
 		void start();
 		void setSocket();
 		void handleDisconnect(int fd);
 		void handleConnect();
 		void receiveMessage(int fd);
-		void joinChannel(IrcClient &client, const std::string &channelName);
-        void sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message);
-        void sendPrivateMessage(IrcClient& sender, const std::string& targetUser, const std::string& message);
-        void sendMessage(IrcClient& sender, const std::string& target, const std::string& message);
 		bool channelExists(const std::string& channelName) const;
 		bool channelHasClient(const std::string& channelName, const IrcClient& client) const;
 		IrcChannel& getChannelByName(const std::string& channelName);
