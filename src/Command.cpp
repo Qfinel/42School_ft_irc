@@ -91,7 +91,7 @@ void UserCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::st
     // Sending a welcome message
     // client.sendResponse("Welcome to the Internet Relay Network " + username + "!");
     if (client.getUserAndNickSet()) {
-        client.sendResponse("001 " + client.getNickname() + " :Welcome to the Internet Relay Network " + client.getNickname()); // 001: RPL_WELCOME
+        client.sendResponse("001 " + client.getNickname() + " :Welcome to the Internet Relay Network, " + client.getNickname()); // 001: RPL_WELCOME
         client.sendResponse("002 " + client.getNickname() + " :Your host is " + servername + ", running version 1.0"); // 002: RPL_YOURHOST
     }
 
@@ -114,7 +114,8 @@ void JoinCommand::joinChannel(IrcClient &client, const std::string &channelName)
     }
 
     // Notify the client that they have joined the channel
-    client.sendResponse("You have joined the channel: " + channelName);
+    client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);  
+    // client.sendResponse("You have joined the channel: " + channelName);
 }
 
 void JoinCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
