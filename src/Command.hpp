@@ -94,4 +94,10 @@ public:
     void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
 };
 
+class WhoCommand : public Command {
+public:
+    WhoCommand(IrcServ& server) : Command(server) {}
+    void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
+};
+
 // // Add other command classes like PartCommand, QuitCommand, etc.

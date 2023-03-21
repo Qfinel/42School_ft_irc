@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/21 12:34:17 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/21 15:57:32 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,10 +206,10 @@ bool IrcServ::channelHasClient(const std::string& channelName, const IrcClient& 
     return false;
 }
 
-IrcChannel& IrcServ::getChannelByName(const std::string& channelName) {
+IrcChannel *IrcServ::getChannelByName(const std::string& channelName) {
     std::vector<IrcChannel>::iterator it = std::find_if(_channels.begin(), _channels.end(), ChannelNameMatcher(channelName));
     if (it != _channels.end()) {
-        return *it;
+        return it.base();
     } else {
         throw std::runtime_error("No such channel: " + channelName);
     }

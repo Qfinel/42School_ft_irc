@@ -121,6 +121,7 @@ void JoinCommand::joinChannel(IrcClient &client, const std::string &channelName)
 void JoinCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() != 1) {
         // Send an error message to the client.
+        client.sendResponse("461 " + client.getNickname() + " JOIN");
         return;
     }
     // Make the client join the specified channel.
@@ -164,6 +165,7 @@ void PrivmsgCommand::sendMessage(IrcClient& sender, const std::string& target, c
 void PrivmsgCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() < 2) {
         // Send an error message to the client.
+        client.sendResponse("461 " + client.getNickname() + " PRIVMSG");
         return;
     }
 
@@ -222,7 +224,7 @@ void NoticeCommand::sendMessage(IrcClient& sender, const std::string& target, co
 
 void NoticeCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() < 2) {
-        client.sendResponse("461 :Not enough arguments for NOTICE command");
+        client.sendResponse("461 " + client.getNickname() + " NOTICE");
         return ;
     }
     // Find the colon (:) to parse the message.
@@ -249,6 +251,7 @@ void NoticeCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::
 void PingCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() < 1) {
         // Send an error message to the client.
+        client.sendResponse("461 " + client.getNickname() + " PING");
         return;
     }
     // Send a PONG response to the client.
@@ -258,7 +261,7 @@ void PingCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::st
 void KickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() < 2) {
         // Send an error message to the client.
-        client.sendResponse("461 KICK :Not enough parameters"); // 461: ERR_NEEDMOREPARAMS
+        client.sendResponse("461 " + client.getNickname() + " KICK"); // 461: ERR_NEEDMOREPARAMS
         return;
     }
 
@@ -267,8 +270,8 @@ void KickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
 
     if (server.channelExists(channel)) {
         if (server.channelHasClient(channel, client)) {
-            const IrcChannel& ircChannel = server.getChannelByName(channel);
-            const IrcClient* nicknameClient = ircChannel.getClientByName(nickname);
+            const IrcChannel *ircChannel = server.getChannelByName(channel);
+            const IrcClient* nicknameClient = ircChannel->getClientByName(nickname);
             if (nicknameClient != &client) { // check if the client to be kicked is not the one issuing the command
                 server.kickClientFromChannel(*nicknameClient, channel);
             } else {
@@ -286,4 +289,25 @@ void CapCommand::execute(IrcServ& server, IrcClient& client, const std::vector<s
     (void)server;
     if (args.size() > 0 && args[0] == "LS")
         client.sendResponse("CAP * LS");
+}
+
+void WhoCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() == 0) {
+        for (std::map<int, IrcClient>::iterator it = server.getClients().begin(); it != server.getClients().end(); it++)
+            client.sendResponse("352 " + client.getNickname() + " * " + it->second.getUsername() + \
+            " * ft_irc " + it->second.getNickname() + " H :0 " + it->second.getRealname());
+    } else if (args.size() == 1 && server.channelExists(args[0])) {
+        IrcChannel *channel = server.getChannelByName(args[0]);
+        std::vector<IrcClient*> vect = channel->getMembers();
+        for (std::vector<IrcClient*>::iterator it = vect.begin(); it != vect.end(); it++)
+            client.sendResponse("352 " + client.getNickname() + " " + args[0] + " " + (*it)->getUsername() + \
+            " * ft_irc " + (*it)->getNickname() + " H :0 " + (*it)->getRealname());
+    } else {
+        return ;
+        // can't do now (requires operators)
+    }
+
+    (void)server; (void)args;
+    // End of response
+    client.sendResponse("315 * :" + client.getNickname());
 }

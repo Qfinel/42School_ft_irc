@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:29:49 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/21 12:34:08 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/21 15:56:59 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ class IrcServ
 		void receiveMessage(int fd);
 		bool channelExists(const std::string& channelName) const;
 		bool channelHasClient(const std::string& channelName, const IrcClient& client) const;
-		IrcChannel& getChannelByName(const std::string& channelName);
+		IrcChannel *getChannelByName(const std::string& channelName);
 		void kickClientFromChannel(const IrcClient& client, const std::string& channelName);
 
 		bool nickInUse(const std::string &nick, IrcClient cl);
