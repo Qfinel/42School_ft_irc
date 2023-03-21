@@ -33,14 +33,20 @@ void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
 }
 
 
-void NickCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
+void NickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
 	if (args.size() != 1) {
         client.sendResponse("461 " + client.getNickname() + " NICK");
         return;
     }
 
     // Set the client's nickname and send a response.
-    client.setNickname(args[0]);
+    if (!server.nickInUse(args[0], client))
+        client.setNickname(args[0]);
+    else
+    {
+        client.sendResponse("433 " + client.getNickname() + " " + args[0] + " :Nickname is already in use");
+        return ;
+    }
 	// client.sendResponse("Your nickname is now " + args[0]);
     if (client.getUserAndNickSet()) {
         client.sendResponse("001 " + client.getNickname() + " :Welcome to the Internet Relay Network " + client.getNickname() + "!"); // 001: RPL_WELCOME
@@ -273,4 +279,10 @@ void KickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
     } else {
         client.sendResponse("402 " + client.getNickname() + " " + channel + " :No such channel"); // 402: ERR_NOSUCHCHANNEL
     }
+}
+
+void CapCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    (void)server;
+    if (args.size() > 0 && args[0] == "LS")
+        client.sendResponse("CAP * LS");
 }

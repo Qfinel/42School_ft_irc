@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/21 12:07:05 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/21 12:48:01 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
         return new PingCommand(*_serv);
     } else if (commandName == "KICK") {
         return new KickCommand(*_serv);
+    } else if (commandName == "CAP") {
+        return new CapCommand(*_serv);
     }
     // Add other commands here, e.g. NICK, USER, JOIN, etc.
     return NULL;
@@ -160,10 +162,10 @@ void CommandHandler::handle() {
         this->_comm = command;
 
 
-        if (!this->_client->getIsAuth() && (commandName != "PASS" && commandName != "NICK" && commandName != "QUIT" && commandName != "PING" && command != NULL)) {
+        if (!this->_client->getIsAuth() && (commandName != "PASS" && commandName != "NICK" && commandName != "QUIT" && commandName != "PING" && commandName != "CAP" && command != NULL)) {
             this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
         } else if (command != NULL) {
-                if ((commandName != "USER" && commandName != "NICK" && commandName != "PASS" && commandName != "QUIT" && commandName != "PING") && !this->_client->getUserAndNickSet()) {
+                if ((commandName != "USER" && commandName != "NICK" && commandName != "PASS" && commandName != "QUIT" && commandName != "PING" && commandName != "CAP") && !this->_client->getUserAndNickSet()) {
                     this->_client->sendResponse("461 " + this->_client->getNickname() + " :Please set both USER and NICK before using other commands");
                 } else {
                     command->execute(*_serv, *_client, args);

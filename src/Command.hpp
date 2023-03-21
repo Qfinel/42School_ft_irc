@@ -88,4 +88,10 @@ public:
     void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
 };
 
+class CapCommand : public Command {
+public:
+    CapCommand(IrcServ& server) : Command(server) {}
+    void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
+};
+
 // // Add other command classes like PartCommand, QuitCommand, etc.

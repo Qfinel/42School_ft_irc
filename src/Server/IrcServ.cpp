@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcServ.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/20 01:40:38 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/21 12:34:17 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,4 +229,14 @@ void IrcServ::kickClientFromChannel(const IrcClient& client, const std::string& 
     } else {
         throw std::runtime_error("No such channel: " + channelName);
     }
+}
+
+bool IrcServ::nickInUse(const std::string &nick, IrcClient cl)
+{
+	for (std::map<int, IrcClient>::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
+	{
+		if (nick == it->second.getNickname() && it->second.getFd() != cl.getFd())
+			return (true);
+	}
+	return (false);
 }
