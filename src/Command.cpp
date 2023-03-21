@@ -5,7 +5,7 @@
 
 void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() < 1) {
-        client.sendResponse("461 PASS :Not enough parameters"); // 461: ERR_NEEDMOREPARAMS
+        client.sendResponse("461 " + client.getNickname() + " PASS"); // 461: ERR_NEEDMOREPARAMS
         return;
     }
     // Find the colon (:) to parse the password.
@@ -28,14 +28,14 @@ void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
             client.sendResponse("464 " + client.getNickname() + " :Password incorrect "); // 464: ERR_PASSWDMISMATCH
         }
     } else {
-        client.sendResponse("462 " + client.getNickname() + " :You may not reregister"); // 462: ERR_ALREADYREGISTRED
+        client.sendResponse("462 " + client.getNickname() + " :You're already registered"); // 462: ERR_ALREADYREGISTRED
     }
 }
 
 
 void NickCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
 	if (args.size() != 1) {
-        client.sendResponse("Usage: NICK <nickname>");
+        client.sendResponse("461 " + client.getNickname() + " NICK");
         return;
     }
 
@@ -43,7 +43,7 @@ void NickCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::st
     client.setNickname(args[0]);
 	// client.sendResponse("Your nickname is now " + args[0]);
     if (client.getUserAndNickSet()) {
-        client.sendResponse("001 " + client.getNickname() + " :Welcome to the Internet Relay Network " + client.getNickname()); // 001: RPL_WELCOME
+        client.sendResponse("001 " + client.getNickname() + " :Welcome to the Internet Relay Network " + client.getNickname() + "!"); // 001: RPL_WELCOME
         client.sendResponse("002 " + client.getNickname() + " :Your host is " + client.getServername() + ", running version 1.0"); // 002: RPL_YOURHOST
     }
 }
@@ -55,7 +55,7 @@ void QuitCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
 
 void UserCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() < 4) {
-        client.sendResponse("Usage: USER <username> <hostname> <servername> <realname>");
+        client.sendResponse("461 " + client.getNickname() + " USER"); //  "Usage: USER <username> <hostname> <servername> <realname>"
         return;
     }
 

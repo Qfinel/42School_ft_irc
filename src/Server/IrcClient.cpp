@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcClient.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 12:00:17 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/20 01:43:02 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/21 11:57:18 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ IrcClient::IrcClient(int fd)
 {
 	this->_fd = fd;
 	this->_isAuth = false;
-	this->_nickname = "";
+	this->_nickname = "*";
 	this->_username = "";
 	this->_realname = "";
 }
