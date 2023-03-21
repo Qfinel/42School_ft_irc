@@ -55,3 +55,7 @@ std::string IrcClient::getRealname() { return this->_realname; }
 std::string IrcClient::getHostname() { return this->_hostname; }
 
 std::string IrcClient::getServername() { return this->_servername; }
+
+bool IrcClient::getUserAndNickSet() const {
+    return !_username.empty() && !_nickname.empty() && _nickname != "*";
+}

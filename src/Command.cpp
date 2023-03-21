@@ -139,9 +139,30 @@ void PrivmsgCommand::sendPrivateMessage(IrcClient& sender, const std::string& ta
     // Target user not found; you can handle this case if needed.
 }
 
+// void PrivmsgCommand::sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message) {
+//     for (std::vector<IrcChannel>::iterator channel_it = _server.getChannels().begin(); channel_it != _server.getChannels().end(); ++channel_it) {
+//         if (channel_it->getName() == channelName) {
+//             std::string response = ":" + sender.getNickname() + " PRIVMSG " + channelName + " :" + message + "\r\n";
+//             const std::vector<IrcClient*>& members = channel_it->getMembers();
+//             for (std::vector<IrcClient*>::const_iterator client_it = members.begin(); client_it != members.end(); ++client_it) {
+//                 if ((*client_it) != &sender) { // Only send the message to clients other than the sender
+//                     (*client_it)->sendResponse(response);
+//                 }
+//             }
+//             return;
+//         }
+//     }
+//     // Channel not found; handle this case if needed.
+// }
+
 void PrivmsgCommand::sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message) {
     for (std::vector<IrcChannel>::iterator channel_it = _server.getChannels().begin(); channel_it != _server.getChannels().end(); ++channel_it) {
         if (channel_it->getName() == channelName) {
+            if (!channel_it->isMember(sender)) {
+                sender.sendResponse(":" + _server.getHostname() + " 404 " + sender.getNickname() + " " + channelName + " :You cannot send external messages to this channel whilst the +n (noextmsg) mode is set.\r\n");
+                return;
+            }
+
             std::string response = ":" + sender.getNickname() + " PRIVMSG " + channelName + " :" + message + "\r\n";
             const std::vector<IrcClient*>& members = channel_it->getMembers();
             for (std::vector<IrcClient*>::const_iterator client_it = members.begin(); client_it != members.end(); ++client_it) {

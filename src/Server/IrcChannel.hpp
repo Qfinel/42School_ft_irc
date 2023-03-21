@@ -34,6 +34,8 @@ class IrcChannel
 		const IrcClient* getClientByName(const std::string& nickname) const;
 		void kickClient(const IrcClient& client);
 		size_t getNumClients() const;
+
+        bool isMember(const IrcClient& client) const;
 };
 
 #endif

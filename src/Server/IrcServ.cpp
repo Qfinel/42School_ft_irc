@@ -15,6 +15,17 @@
 
 IrcServ::IrcServ(char *port, char *pass) : _port(atoi(port)), _pass(pass)
 {
+    // Allocate a buffer to store the hostname
+    const int HOSTNAME_BUFFER_SIZE = 256;
+    char hostnameBuffer[HOSTNAME_BUFFER_SIZE];
+
+    // Get the hostname
+    if (gethostname(hostnameBuffer, HOSTNAME_BUFFER_SIZE) == 0) {
+        _hostname = std::string(hostnameBuffer);
+    } else {
+        // If getting the hostname fails, use "localhost" or "127.0.0.1" as a fallback
+        _hostname = "localhost";
+    }
 	setSocket();
 	this->_running = false;
 }
@@ -26,6 +37,8 @@ std::string	IrcServ::getPass()	{return (this->_pass);}
 std::vector<IrcChannel>& IrcServ::getChannels()	{return (this->_channels);}
 
 std::map<int, IrcClient>& IrcServ::getClients()	{return (this->_clients);}
+
+std::string IrcServ::getHostname() { return _hostname; }
 
 void IrcServ::handleDisconnect(int fd)
 {
@@ -183,10 +196,6 @@ public:
 private:
     std::string _channelName;
 };
-
-bool IrcClient::getUserAndNickSet() const {
-    return !_username.empty() && !_nickname.empty();
-}
 
 bool IrcServ::channelExists(const std::string& channelName) const {
     for (std::vector<IrcChannel>::const_iterator it = _channels.begin(); it != _channels.end(); ++it) {

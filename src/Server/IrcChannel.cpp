@@ -54,3 +54,13 @@ void IrcChannel::kickClient(const IrcClient& client) {
     }
     throw std::runtime_error("No such client in the channel: " + client.getNickname());
 }
+
+bool IrcChannel::isMember(const IrcClient& client) const {
+    for (std::vector<IrcClient*>::const_iterator it = _clients.begin(); it != _clients.end(); ++it) {
+        const IrcClient* member = *it;
+        if (&client == member) {
+            return true;
+        }
+    }
+    return false;
+}

@@ -36,6 +36,8 @@ class IrcServ
 		std::map<int, IrcClient>	_clients;
 		std::vector<IrcChannel>	_channels;
 
+        std::string _hostname;
+
 	public:
 		IrcServ(char *port, char *pass);
 		~IrcServ();
@@ -43,6 +45,7 @@ class IrcServ
 		std::string	getPass();
         std::vector<IrcChannel>& getChannels();
         std::map<int, IrcClient>& getClients();
+        std::string getHostname();
 		void start();
 		void setSocket();
 		void handleDisconnect(int fd);
