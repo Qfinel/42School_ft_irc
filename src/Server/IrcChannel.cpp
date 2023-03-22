@@ -12,7 +12,14 @@
 
 #include "IrcChannel.hpp"
 
-IrcChannel::IrcChannel(const std::string& name) : _name(name) {}
+IrcChannel::IrcChannel(const std::string& name)
+    : _name(name)
+{
+    // Set default modes to +nt
+    _modes.insert("n");
+    _modes.insert("t");
+}
+
 
 IrcChannel::~IrcChannel() {}
 
@@ -44,6 +51,14 @@ const IrcClient* IrcChannel::getClientByName(const std::string& nickname) const 
     throw std::runtime_error("No such client: " + nickname);
 }
 
+std::string IrcChannel::getMode() const {
+    std::string mode = "+";
+    for (std::set<std::string>::const_iterator it = _modes.begin(); it != _modes.end(); ++it) {
+        mode += *it;
+    }
+    return mode;
+}
+
 void IrcChannel::kickClient(const IrcClient& client) {
     for (std::vector<IrcClient*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
         if (*it == &client) {
@@ -63,4 +78,12 @@ bool IrcChannel::isMember(const IrcClient& client) const {
         }
     }
     return false;
+}
+
+void IrcChannel::addMode(const std::string& mode) {
+    _modes.insert(mode);
+}
+
+void IrcChannel::removeMode(const std::string& mode) {
+    _modes.erase(mode);
 }

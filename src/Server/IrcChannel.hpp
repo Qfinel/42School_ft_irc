@@ -15,6 +15,7 @@
 
 # include <iostream>
 # include <vector>
+# include <set>
 # include "IrcClient.hpp"
 
 class IrcChannel
@@ -22,6 +23,7 @@ class IrcChannel
 	private:
 		std::string		_name;
 		std::vector<IrcClient*>	_clients;
+        std::set<std::string> _modes;
 
 	public:
 		IrcChannel(const std::string& name);
@@ -34,8 +36,10 @@ class IrcChannel
 		const IrcClient* getClientByName(const std::string& nickname) const;
 		void kickClient(const IrcClient& client);
 		size_t getNumClients() const;
-
         bool isMember(const IrcClient& client) const;
+        void addMode(const std::string& mode);
+        void removeMode(const std::string& mode);
+        std::string getMode() const;
 };
 
 #endif

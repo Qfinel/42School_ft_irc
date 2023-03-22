@@ -390,3 +390,45 @@ void ListCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         client.sendResponse("323 " + client.getNickname() + " :End of /LIST");
     }
 }
+
+// Implementation of ModeCommand::execute
+void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() < 1) {
+        // Handle incorrect usage: not enough arguments
+        // You may want to send an appropriate error message to the client
+        return;
+    }
+
+    const std::string& channelName = args[0];
+
+    // Locate the channel
+    std::vector<IrcChannel>& channels = server.getChannels();
+    std::vector<IrcChannel>::iterator channelIt = std::find_if(channels.begin(), channels.end(), ChannelNameMatcher(channelName));
+
+    if (channelIt == channels.end()) {
+        // Handle channel not found
+        // You may want to send an appropriate error message to the client
+        return;
+    }
+    // Check if the client has the necessary privileges to set the mode (usually the channel operator)
+    // This step depends on your IrcClient and IrcChannel implementation
+
+    // If there's only a channel name, send the mode response
+    if (args.size() == 1) {
+        std::string modeString = channelIt->getMode();
+        std::string hostname = server.getHostname();
+        std::string timestamp = "1679504576";
+
+        client.sendResponse(":" + hostname + " 324 " + client.getNickname() + " " + channelName + " :" + modeString);
+        client.sendResponse(":" + hostname + " 329 " + client.getNickname() + " " + channelName + " :" + timestamp);
+    } else {
+        const std::string& mode = args[1];
+        bool add = mode[0] == '+';
+        // Set or unset the mode
+        if (add) {
+            channelIt->addMode(mode.substr(1));
+        } else {
+            channelIt->removeMode(mode.substr(1));
+        }
+    }
+}

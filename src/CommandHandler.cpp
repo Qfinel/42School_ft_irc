@@ -53,6 +53,8 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
         return new PartCommand(*_serv);
     } else if (commandName == "LIST" || commandName == "list") {
         return new ListCommand(*_serv);
+    } else if (commandName == "MODE") {
+        return new ModeCommand(*_serv);
     }
     // Add other commands here, e.g. NICK, USER, JOIN, etc.
     return NULL;
