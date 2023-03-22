@@ -299,6 +299,14 @@ void KickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
             const IrcClient* nicknameClient = ircChannel->getClientByName(nickname);
             if (nicknameClient != &client) { // check if the client to be kicked is not the one issuing the command
                 server.kickClientFromChannel(*nicknameClient, channel);
+                if (args.size() > 2) {
+                    std::string reason = args[2];
+                    for (size_t i = 3; i < args.size(); i++)
+                        reason += " " + args[i];
+                    nicknameClient->sendResponse(":" + client.getNickname() + " KICK " + channel + " " + nickname + " :" + reason);
+                }
+                else
+                    nicknameClient->sendResponse(":" + client.getNickname() + " KICK " + channel + " " + nickname + " :No reason");
             } else {
                 client.sendResponse(client.getNickname() + " " + channel + " :You can't kick yourself");
             }
@@ -306,7 +314,7 @@ void KickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
             client.sendResponse("442 " + client.getNickname() + " " + channel + " :You're not on that channel"); // 442: ERR_NOTONCHANNEL
         }
     } else {
-        client.sendResponse("402 " + client.getNickname() + " " + channel + " :No such channel"); // 402: ERR_NOSUCHCHANNEL
+        client.sendResponse("403 " + client.getNickname() + " " + channel + " :No such channel"); // 403: ERR_NOSUCHCHANNEL
     }
 }
 
@@ -332,7 +340,40 @@ void WhoCommand::execute(IrcServ& server, IrcClient& client, const std::vector<s
         // can't do now (requires operators)
     }
 
-    (void)server; (void)args;
     // End of response
     client.sendResponse("315 * :" + client.getNickname());
+}
+
+void PartCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args)
+{
+    if (args.size() < 1) {
+        client.sendResponse("461 " + client.getNickname() + " PART");
+        return;
+    }
+
+    if (server.channelExists(args[0])) {
+        try
+        {
+            server.channelHasClient(args[0], client);
+        }
+        catch (std::runtime_error &e)
+        {
+            client.sendResponse("442 " + client.getNickname() + " " + args[0] + " :You're not on that channel"); // 442: ERR_NOTONCHANNEL
+            return ;
+        }
+    } else {
+        client.sendResponse("403 " + client.getNickname() + " " + args[0] + " :No such channel"); // 403: ERR_NOSUCHCHANNEL
+        return ;
+    }
+
+    if (args.size() == 1) {
+        server.kickClientFromChannel(client, args[0]);
+        client.sendResponse(":" + client.getNickname() + "!~" + client.getUsername() + "@" + client.getHostname() + " PART " + args[0] + " :No reason");
+    } else {
+        server.kickClientFromChannel(client, args[0]);
+        std::string response = ":" + client.getNickname() + "!~" + client.getUsername() + "@" + client.getHostname() + " PART " + args[0] + " " + args[1];
+        for (size_t i = 2; i < args.size(); i++)
+            response += " " + args[i];
+        client.sendResponse(response);
+    }
 }

@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/21 16:09:53 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/22 11:36:49 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void IrcChannel::kickClient(const IrcClient& client) {
     for (std::vector<IrcClient*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
         if (*it == &client) {
             _clients.erase(it);
-            client.sendResponse("You have been kicked from the channel: " + _name);
+            // client.sendResponse("You have been kicked from the channel: " + _name);
             return;
         }
     }

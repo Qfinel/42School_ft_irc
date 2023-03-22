@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/21 15:31:08 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/22 10:58:21 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
         return new CapCommand(*_serv);
     } else if (commandName == "WHO") {
         return new WhoCommand(*_serv);
+    } else if (commandName == "PART") {
+        return new PartCommand(*_serv);
     }
     // Add other commands here, e.g. NICK, USER, JOIN, etc.
     return NULL;
