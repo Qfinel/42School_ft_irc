@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/22 10:58:21 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/22 14:09:33 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
 		return new QuitCommand(*_serv);
 	} else if (commandName == "USER") {
 		return new UserCommand(*_serv);
-	} else if (commandName == "JOIN") {
+	} else if (commandName == "JOIN" || commandName == "join") {
 		return new JoinCommand(*_serv);
 	} else if (commandName == "PRIVMSG") {
         return new PrivmsgCommand(*_serv);
@@ -51,6 +51,8 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
         return new WhoCommand(*_serv);
     } else if (commandName == "PART") {
         return new PartCommand(*_serv);
+    } else if (commandName == "LIST" || commandName == "list") {
+        return new ListCommand(*_serv);
     }
     // Add other commands here, e.g. NICK, USER, JOIN, etc.
     return NULL;

@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/21 15:57:32 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/22 12:47:28 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,6 +183,7 @@ void IrcServ::start()
 			}
 		}
 	}
+	close(_socket);
 }
 
 class ChannelNameMatcher {

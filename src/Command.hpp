@@ -106,4 +106,11 @@ public:
     void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
 };
 
+class ListCommand : public Command {
+public:
+    ListCommand(IrcServ& server) : Command(server) {}
+    void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
+};
+
+
 // // Add other command classes like PartCommand, QuitCommand, etc.

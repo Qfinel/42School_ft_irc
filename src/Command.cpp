@@ -108,14 +108,12 @@ void JoinCommand::joinChannel(IrcClient &client, const std::string &channelName)
         IrcChannel newChannel(channelName);
         newChannel.addClient(client);
         _server.getChannels().push_back(newChannel);
-    } else {
+    } else if (!it->isMember(client)){
         // Add the client to the existing channel
         it->addClient(client);
+        // Notify the client that they have joined the channel
+        client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);  
     }
-
-    // Notify the client that they have joined the channel
-    client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);  
-    // client.sendResponse("You have joined the channel: " + channelName);
 }
 
 void JoinCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
@@ -375,5 +373,20 @@ void PartCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         for (size_t i = 2; i < args.size(); i++)
             response += " " + args[i];
         client.sendResponse(response);
+    }
+}
+
+void ListCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() == 0) {
+        client.sendResponse("321 " + client.getNickname() + " Channel :Users Name");
+        std::vector<IrcChannel> list = server.getChannels();
+        for (size_t i = 0; i < list.size(); i++)
+        {
+            std::stringstream ss;
+            ss << list[i].getNumClients();
+            std::string num = ss.str();
+            client.sendResponse("322 " + client.getNickname() + " " + list[i].getName() + " " + num);
+        } 
+        client.sendResponse("323 " + client.getNickname() + " :End of /LIST");
     }
 }
