@@ -111,9 +111,9 @@ void JoinCommand::joinChannel(IrcClient &client, const std::string &channelName)
     } else if (!it->isMember(client)){
         // Add the client to the existing channel
         it->addClient(client);
-        // Notify the client that they have joined the channel
-        client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);  
     }
+    // Notify the client that they have joined the channel
+    client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);  
 }
 
 void JoinCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
