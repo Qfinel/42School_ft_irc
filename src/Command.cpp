@@ -109,12 +109,14 @@ void JoinCommand::joinChannel(IrcClient &client, const std::string &channelName)
         IrcChannel newChannel(channelName);
         newChannel.addClient(client);
         _server.getChannels().push_back(newChannel);
+        client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);
     } else if (!it->isMember(client)){
         // Add the client to the existing channel
         it->addClient(client);
+        client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);
     }
     // Notify the client that they have joined the channel
-    client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);  
+    // client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);
 }
 
 void JoinCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
@@ -339,15 +341,21 @@ void WhoCommand::execute(IrcServ& server, IrcClient& client, const std::vector<s
     } else if (args.size() == 1) {
         IrcChannel *channel = server.getChannelByName(args[0]);
         std::vector<IrcClient*> vect = channel->getMembers();
-        for (std::vector<IrcClient*>::iterator it = vect.begin(); it != vect.end(); it++)
-            client.sendResponse("352 " + client.getNickname() + " " + args[0] + " " + (*it)->getUsername() + \
+        std::string channel_name = channel->getName();
+        channel_name.erase(0, 1);
+        for (std::vector<IrcClient*>::iterator it = vect.begin(); it != vect.end(); it++) {
+            client.sendResponse("352 " + client.getNickname() + " " + channel_name + " " + (*it)->getUsername() + \
             " * ft_irc " + (*it)->getNickname() + " H :0 " + (*it)->getRealname());
+        }
     } else if (args[1] == "o") {
         IrcChannel *channel = server.getChannelByName(args[0]);
         std::vector<IrcClient*> vect = channel->getOperators();
-        for (std::vector<IrcClient*>::iterator it = vect.begin(); it != vect.end(); it++)
-            client.sendResponse("352 " + client.getNickname() + " " + args[0] + " " + (*it)->getUsername() + \
-            " * ft_irc " + (*it)->getNickname() + " H :0 " + (*it)->getRealname());
+        std::string channel_name = channel->getName();
+        channel_name.erase(0, 1);
+        for (std::vector<IrcClient*>::iterator it = vect.begin(); it != vect.end(); it++) {
+            client.sendResponse("352 " + client.getNickname() + " " + channel_name + " " + (*it)->getUsername() + \
+            " * ft_irc " + (*it)->getNickname() + " G :0 " + (*it)->getRealname());
+        } 
     }
 
     // End of response
@@ -397,7 +405,7 @@ void ListCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
             std::stringstream ss;
             ss << list[i].getNumClients();
             std::string num = ss.str();
-            client.sendResponse("322 " + client.getNickname() + " " + list[i].getName() + " " + num);
+            client.sendResponse(":ft_irc 322 " + client.getNickname() + " " + list[i].getName() + " " + num + " :" + list[i].getTopic());
         } 
         client.sendResponse("323 " + client.getNickname() + " :End of /LIST");
     }
@@ -450,5 +458,29 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         client.sendResponse("482 " + client.getNickname() + " " + channelName + " :You must be a channel op or higher to set channel mode " + args[1]);
     } else {
         // Banning is not handled here
+    }
+}
+
+void TopicCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() < 1) {
+        // Send an error message to the client.
+        client.sendResponse("461 " + client.getNickname() + " TOPIC"); // 461: ERR_NEEDMOREPARAMS
+        return;
+    }
+
+    if (!server.channelExists(args[0])) {
+        client.sendResponse("403 " + client.getNickname() + " " + args[0] + " :No such channel"); // 403: ERR_NOSUCHCHANNEL
+        return ;
+    }
+
+    IrcChannel *channel = server.getChannelByName(args[0]);
+    if (args.size() == 1) {
+        client.sendResponse("332 " + client.getNickname() + " " + args[0] + " :" + channel->getTopic());
+    } else {
+        std::string topic = args[1];
+        for (size_t i = 2; i < args.size(); i++)
+            topic += " " + args[i];
+        channel->setTopic(topic);
+        client.sendResponse("332 " + client.getNickname() + " " + args[0] + " :" + topic); // SET TOPIC
     }
 }

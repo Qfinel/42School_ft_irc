@@ -6,7 +6,7 @@
 #    By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/24 14:09:59 by jtsizik           #+#    #+#              #
-#    Updated: 2023/03/14 13:18:08 by jtsizik          ###   ########.fr        #
+#    Updated: 2023/03/23 15:15:31 by jtsizik          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,7 @@ obj/%.o: %.cpp
 	c++ -c -Wall -Wextra -Werror -std=c++98 $< -o $@
 
 $(NAME): obj $(OBJS)
-	c++ -Wall -Wextra -Werror -std=c++98 $(OBJS) -o $(NAME)
+	c++ -Wall -Wextra -Werror -std=c++98 -fsanitize=address $(OBJS) -o $(NAME)
 
 all: $(NAME)
 

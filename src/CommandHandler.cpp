@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/22 14:09:33 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 14:39:55 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
         return new ListCommand(*_serv);
     } else if (commandName == "MODE") {
         return new ModeCommand(*_serv);
+    } else if (commandName == "TOPIC") {
+        return new TopicCommand(*_serv);
     }
     // Add other commands here, e.g. NICK, USER, JOIN, etc.
     return NULL;
