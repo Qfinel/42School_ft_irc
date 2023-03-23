@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 14:10:52 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 15:00:49 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ IrcChannel::IrcChannel(const std::string& name)
     // Set default modes to +nt
     _modes.insert("n");
     _modes.insert("t");
+    _topic = "";
 }
 
 
@@ -108,3 +109,7 @@ void IrcChannel::addMode(const std::string& mode) {
 void IrcChannel::removeMode(const std::string& mode) {
     _modes.erase(mode);
 }
+
+const std::string& IrcChannel::getTopic() const {return (_topic);}
+
+void IrcChannel::setTopic(const std::string &topic) {_topic = topic;}

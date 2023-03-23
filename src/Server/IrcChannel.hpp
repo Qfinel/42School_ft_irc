@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:30:42 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 13:05:33 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 14:54:04 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ class IrcChannel
 		std::vector<IrcClient*>	_clients;
 		std::vector<IrcClient*>	_operators;
         std::set<std::string> _modes;
+		std::string		_topic;
 
 	public:
 		IrcChannel(const std::string& name);
@@ -43,6 +44,8 @@ class IrcChannel
         void addMode(const std::string& mode);
         void removeMode(const std::string& mode);
         std::string getMode() const;
+		const std::string& getTopic() const;
+		void setTopic(const std::string &topic);
 };
 
 #endif

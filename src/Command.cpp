@@ -108,12 +108,14 @@ void JoinCommand::joinChannel(IrcClient &client, const std::string &channelName)
         IrcChannel newChannel(channelName);
         newChannel.addClient(client);
         _server.getChannels().push_back(newChannel);
+        client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);
     } else if (!it->isMember(client)){
         // Add the client to the existing channel
         it->addClient(client);
+        client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);
     }
     // Notify the client that they have joined the channel
-    client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);  
+    // client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);
 }
 
 void JoinCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
@@ -396,7 +398,7 @@ void ListCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
             std::stringstream ss;
             ss << list[i].getNumClients();
             std::string num = ss.str();
-            client.sendResponse("322 " + client.getNickname() + " " + list[i].getName() + " " + num);
+            client.sendResponse("322 " + client.getNickname() + " " + list[i].getName() + " " + num + " :" + list[i].getTopic());
         } 
         client.sendResponse("323 " + client.getNickname() + " :End of /LIST");
     }
@@ -441,5 +443,29 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         } else {
             channelIt->removeMode(mode.substr(1));
         }
+    }
+}
+
+void TopicCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() < 1) {
+        // Send an error message to the client.
+        client.sendResponse("461 " + client.getNickname() + " TOPIC"); // 461: ERR_NEEDMOREPARAMS
+        return;
+    }
+
+    if (!server.channelExists(args[0])) {
+        client.sendResponse("403 " + client.getNickname() + " " + args[0] + " :No such channel"); // 403: ERR_NOSUCHCHANNEL
+        return ;
+    }
+
+    IrcChannel *channel = server.getChannelByName(args[0]);
+    if (args.size() == 1) {
+        client.sendResponse("332 " + client.getNickname() + " " + args[0] + " :" + channel->getTopic());
+    } else {
+        std::string topic = args[1];
+        for (size_t i = 2; i < args.size(); i++)
+            topic += " " + args[i];
+        channel->setTopic(topic);
+        client.sendResponse("332 " + client.getNickname() + " " + args[0] + " :" + topic); // SET TOPIC
     }
 }
