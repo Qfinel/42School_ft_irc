@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 15:54:11 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 17:29:11 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,14 @@ void IrcServ::handleDisconnect(int fd)
 {
 	std::cout << "Client disconnected!" << std::endl;
 
+	IrcClient client = _clients.at(fd);
+
+	for (std::vector<IrcChannel>::iterator it = _channels.begin(); it != _channels.end(); it++)
+	{
+		if (it->isMember(client))
+			it->kickClient(client);
+	}
+
 	close(fd);
 
 	for (std::vector<struct pollfd>::iterator it = this->_fds.begin(); it != this->_fds.end(); it++)
@@ -56,6 +64,8 @@ void IrcServ::handleDisconnect(int fd)
 	}
 
 	this->_clients.erase(fd);
+	if (_clients.size() == 0)
+		_running = false;
 }
 
 void IrcServ::handleConnect()
