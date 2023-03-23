@@ -514,3 +514,15 @@ void TopicCommand::execute(IrcServ& server, IrcClient& client, const std::vector
         client.sendResponse("332 " + client.getNickname() + " " + args[0] + " :" + topic); // SET TOPIC
     }
 }
+
+void InviteCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+        (void)client;
+        if (args.size() != 2) {
+            // do error
+            return;
+        }
+        std::string user = args[0];
+        std::string channel = args[1];
+        
+        server.inviteUserToChannel(user, channel);
+}

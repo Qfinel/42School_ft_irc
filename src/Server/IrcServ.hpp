@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcServ.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:29:49 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 15:50:34 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 18:47:33 by hngo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ class IrcServ
 		bool channelHasClient(const std::string& channelName, const IrcClient& client) const;
 		IrcChannel *getChannelByName(const std::string& channelName);
 		void kickClientFromChannel(const IrcClient& client, const std::string& channelName);
-
+		void inviteUserToChannel(const std::string& username, const std::string& channelName);
 		bool nickInUse(const std::string &nick, IrcClient cl);
 
 };

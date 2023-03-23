@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcServ.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 17:29:11 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 18:46:53 by hngo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,4 +259,37 @@ bool IrcServ::nickInUse(const std::string &nick, IrcClient cl)
 			return (true);
 	}
 	return (false);
+}
+
+void IrcServ::inviteUserToChannel(const std::string& nickname, const std::string& channelName) {
+    
+	// Check if channel exits
+    IrcChannel* channel = getChannelByName(channelName);
+    if (!channel) {
+        throw std::runtime_error("403 " + channelName + " :No such channel\r\n");
+        return;
+    }
+
+	//check if sender is oper
+	
+	const IrcClient* user = channel->getClientByName(nickname);
+	if (!user) {
+    throw std::runtime_error("401 " + nickname + " :No such nick\r\n");
+    return;
+}
+
+	
+	// Check if user is already a member of the channel
+    if (channel->isMember(*user)) {
+        throw std::runtime_error("443 " + nickname + " " + channelName + " :is already on channel\r\n");
+        return;
+    }
+
+	//check if invite only
+
+	//put invitee on invite list
+	channel->addToInviteList(*user); // need to check in JOIN command if user is on _invited_clients;
+	channel->sendMessage("341 " + nickname + " " + channelName);
+	
+	//
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcChannel.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 15:29:24 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 18:50:32 by hngo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,10 @@ void IrcChannel::addClient(IrcClient& client) {
     if (_clients.size() == 0)
         _operators.push_back(&client);
 	_clients.push_back(&client);
+}
+
+void IrcChannel::addToInviteList(const IrcClient& client) {
+    _invited_clients.push_back(&client);
 }
 
 void IrcChannel::sendMessage(const std::string& message) {
