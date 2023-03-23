@@ -340,15 +340,21 @@ void WhoCommand::execute(IrcServ& server, IrcClient& client, const std::vector<s
     } else if (args.size() == 1) {
         IrcChannel *channel = server.getChannelByName(args[0]);
         std::vector<IrcClient*> vect = channel->getMembers();
-        for (std::vector<IrcClient*>::iterator it = vect.begin(); it != vect.end(); it++)
-            client.sendResponse("352 " + client.getNickname() + " " + args[0] + " " + (*it)->getUsername() + \
+        std::string channel_name = channel->getName();
+        channel_name.erase(0, 1);
+        for (std::vector<IrcClient*>::iterator it = vect.begin(); it != vect.end(); it++) {
+            client.sendResponse("352 " + client.getNickname() + " " + channel_name + " " + (*it)->getUsername() + \
             " * ft_irc " + (*it)->getNickname() + " H :0 " + (*it)->getRealname());
+        }
     } else if (args[1] == "o") {
         IrcChannel *channel = server.getChannelByName(args[0]);
         std::vector<IrcClient*> vect = channel->getOperators();
-        for (std::vector<IrcClient*>::iterator it = vect.begin(); it != vect.end(); it++)
-            client.sendResponse("352 " + client.getNickname() + " " + args[0] + " " + (*it)->getUsername() + \
-            " * ft_irc " + (*it)->getNickname() + " H :0 " + (*it)->getRealname());
+        std::string channel_name = channel->getName();
+        channel_name.erase(0, 1);
+        for (std::vector<IrcClient*>::iterator it = vect.begin(); it != vect.end(); it++) {
+            client.sendResponse("352 " + client.getNickname() + " " + channel_name + " " + (*it)->getUsername() + \
+            " * ft_irc " + (*it)->getNickname() + " G :0 " + (*it)->getRealname());
+        } 
     }
 
     // End of response
