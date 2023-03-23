@@ -287,11 +287,6 @@ void NoticeCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::
         }
     }
 
-    // const std::string& target = args[0];
-    // const std::string& message = args[1];
-
-    // ircServ.sendMessage(client, target, message);
-        // Send the message from the client to the specified target.
     sendMessage(client, args[0], message);
 }
 
@@ -548,4 +543,15 @@ void TopicCommand::execute(IrcServ& server, IrcClient& client, const std::vector
         channel->setTopic(topic);
         client.sendResponse("332 " + client.getNickname() + " " + args[0] + " :" + topic); // SET TOPIC
     }
+}
+
+void InviteCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+        if (args.size() != 2) {
+            client.sendResponse("461 " + client.getNickname() + "INVITE :Not enough parameters\r\n"); 
+            return;
+        }
+        std::string user = args[0];
+        std::string channel = args[1];
+        
+        server.inviteUserToChannel(user, channel);
 }

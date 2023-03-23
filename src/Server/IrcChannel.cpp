@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcChannel.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 15:29:24 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 18:50:32 by hngo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,15 @@ void IrcChannel::addClient(IrcClient& client) {
 	_clients.push_back(&client);
 }
 
+<<<<<<< HEAD
 void IrcChannel::addOperator(IrcClient& client) {
     if (!isMember(client))
         throw std::runtime_error("482 " + client.getNickname() + " :No such client in the channel: " + client.getNickname());
     _operators.push_back(&client);
+=======
+void IrcChannel::addToInviteList(const IrcClient& client) {
+    _invited_clients.push_back(&client);
+>>>>>>> ae5b0f14cc98fbdf90166242710a6bade09490ad
 }
 
 void IrcChannel::sendMessage(const std::string& message) {
