@@ -396,20 +396,37 @@ void PartCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
     }
 }
 
+// void ListCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+//     if (args.size() == 0) {
+//         client.sendResponse("321 " + client.getNickname() + " Channel :Users Name");
+//         std::vector<IrcChannel> list = server.getChannels();
+//         for (size_t i = 0; i < list.size(); i++)
+//         {
+//             std::stringstream ss;
+//             ss << list[i].getNumClients();
+//             std::string num = ss.str();
+//             client.sendResponse(":ft_irc 322 " + client.getNickname() + " " + list[i].getName() + " " + num + " :" + list[i].getTopic());
+//         } 
+//         client.sendResponse("323 " + client.getNickname() + " :End of /LIST");
+//     }
+// }
+
 void ListCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() == 0) {
-        client.sendResponse("321 " + client.getNickname() + " Channel :Users Name");
+        std::string server_name = server.getHostname();
+        client.sendResponse(":" + server_name + " 321 " + client.getNickname() + " Channel :Users Name");
         std::vector<IrcChannel> list = server.getChannels();
         for (size_t i = 0; i < list.size(); i++)
         {
             std::stringstream ss;
             ss << list[i].getNumClients();
             std::string num = ss.str();
-            client.sendResponse(":ft_irc 322 " + client.getNickname() + " " + list[i].getName() + " " + num + " :" + list[i].getTopic());
+            client.sendResponse(":" + server_name + " 322 " + client.getNickname() + " " + list[i].getName() + " " + num + " :" + list[i].getTopic());
         } 
-        client.sendResponse("323 " + client.getNickname() + " :End of /LIST");
+        client.sendResponse(":" + server_name + " 323 " + client.getNickname() + " :End of channel list.");
     }
 }
+
 
 // Implementation of ModeCommand::execute
 void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
@@ -477,9 +494,22 @@ void TopicCommand::execute(IrcServ& server, IrcClient& client, const std::vector
     if (args.size() == 1) {
         client.sendResponse("332 " + client.getNickname() + " " + args[0] + " :" + channel->getTopic());
     } else {
-        std::string topic = args[1];
-        for (size_t i = 2; i < args.size(); i++)
-            topic += " " + args[i];
+        // Find the colon (:) to parse the message.
+        size_t colonPos = args[1].find(':');
+        std::string topic;
+
+        if (colonPos != 0) {
+            topic = args[1];
+        } else {
+            topic = args[1].substr(colonPos + 1);
+            for (size_t i = 2; i < args.size(); ++i) {
+                topic += " " + args[i];
+            }
+        }
+
+        // std::string topic = args[1];
+        // for (size_t i = 2; i < args.size(); i++)
+        //     topic += " " + args[i];
         channel->setTopic(topic);
         client.sendResponse("332 " + client.getNickname() + " " + args[0] + " :" + topic); // SET TOPIC
     }
