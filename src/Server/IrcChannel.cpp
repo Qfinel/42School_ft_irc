@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 13:13:11 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 14:10:52 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,14 +66,19 @@ std::string IrcChannel::getMode() const {
 }
 
 void IrcChannel::kickClient(const IrcClient& client) {
+    if (!isMember(client))
+        throw std::runtime_error("No such client in the channel: " + client.getNickname());
+
     for (std::vector<IrcClient*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-        if (*it == &client) {
+        if (*it == &client)
             _clients.erase(it);
-            // client.sendResponse("You have been kicked from the channel: " + _name);
-            return;
+    }
+    if (isOperator(client)) {
+        for (std::vector<IrcClient*>::iterator it = _operators.begin(); it != _operators.end(); ++it) {
+            if (*it == &client)
+                _operators.erase(it);
         }
     }
-    throw std::runtime_error("No such client in the channel: " + client.getNickname());
 }
 
 bool IrcChannel::isMember(const IrcClient& client) const {
