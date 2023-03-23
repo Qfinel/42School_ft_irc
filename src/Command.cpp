@@ -295,7 +295,7 @@ void KickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         if (server.channelHasClient(channel, client)) {
             const IrcChannel *ircChannel = server.getChannelByName(channel);
             const IrcClient* nicknameClient = ircChannel->getClientByName(nickname);
-            if (nicknameClient != &client) { // check if the client to be kicked is not the one issuing the command
+            if (nicknameClient != &client && ircChannel->isOperator(client)) { // check if the client to be kicked is not the one issuing the command
                 server.kickClientFromChannel(*nicknameClient, channel);
                 if (args.size() > 2) {
                     std::string reason = args[2];
@@ -305,6 +305,8 @@ void KickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
                 }
                 else
                     nicknameClient->sendResponse(":" + client.getNickname() + " KICK " + channel + " " + nickname + " :No reason");
+            } else if (!ircChannel->isOperator(client)){
+                client.sendResponse("482 " + client.getNickname() + " " + channel + " :You're not channel operator"); // 482: ERR_CHANOPRIVSNEEDED
             } else {
                 client.sendResponse(client.getNickname() + " " + channel + " :You can't kick yourself");
             }
@@ -323,19 +325,28 @@ void CapCommand::execute(IrcServ& server, IrcClient& client, const std::vector<s
 }
 
 void WhoCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
+    if (args.size() > 0 && !server.channelExists(args[0]))
+    {
+        client.sendResponse("403 " + client.getNickname() + " " + args[0] + " :No such channel"); // 403: ERR_NOSUCHCHANNEL
+        return ;
+    }
+
     if (args.size() == 0) {
         for (std::map<int, IrcClient>::iterator it = server.getClients().begin(); it != server.getClients().end(); it++)
             client.sendResponse("352 " + client.getNickname() + " * " + it->second.getUsername() + \
             " * ft_irc " + it->second.getNickname() + " H :0 " + it->second.getRealname());
-    } else if (args.size() == 1 && server.channelExists(args[0])) {
+    } else if (args.size() == 1) {
         IrcChannel *channel = server.getChannelByName(args[0]);
         std::vector<IrcClient*> vect = channel->getMembers();
         for (std::vector<IrcClient*>::iterator it = vect.begin(); it != vect.end(); it++)
             client.sendResponse("352 " + client.getNickname() + " " + args[0] + " " + (*it)->getUsername() + \
             " * ft_irc " + (*it)->getNickname() + " H :0 " + (*it)->getRealname());
-    } else {
-        return ;
-        // can't do now (requires operators)
+    } else if (args[1] == "o") {
+        IrcChannel *channel = server.getChannelByName(args[0]);
+        std::vector<IrcClient*> vect = channel->getOperators();
+        for (std::vector<IrcClient*>::iterator it = vect.begin(); it != vect.end(); it++)
+            client.sendResponse("352 " + client.getNickname() + " " + args[0] + " " + (*it)->getUsername() + \
+            " * ft_irc " + (*it)->getNickname() + " H :0 " + (*it)->getRealname());
     }
 
     // End of response

@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/22 11:36:49 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 13:13:11 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ const std::string& IrcChannel::getName() const {
 }
 
 void IrcChannel::addClient(IrcClient& client) {
+    if (_clients.size() == 0)
+        _operators.push_back(&client);
 	_clients.push_back(&client);
 }
 
@@ -40,6 +42,10 @@ void IrcChannel::sendMessage(const std::string& message) {
 
 const std::vector<IrcClient*>& IrcChannel::getMembers() const {
     return _clients;
+}
+
+const std::vector<IrcClient*>& IrcChannel::getOperators() const {
+    return _operators;
 }
 
 const IrcClient* IrcChannel::getClientByName(const std::string& nickname) const {
@@ -74,6 +80,16 @@ bool IrcChannel::isMember(const IrcClient& client) const {
     for (std::vector<IrcClient*>::const_iterator it = _clients.begin(); it != _clients.end(); ++it) {
         const IrcClient* member = *it;
         if (&client == member) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool IrcChannel::isOperator(const IrcClient& client) const {
+    for (std::vector<IrcClient*>::const_iterator it = _operators.begin(); it != _operators.end(); ++it) {
+        const IrcClient* oper = *it;
+        if (&client == oper) {
             return true;
         }
     }

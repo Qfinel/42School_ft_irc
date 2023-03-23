@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:30:42 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/21 16:09:55 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 13:05:33 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ class IrcChannel
 	private:
 		std::string		_name;
 		std::vector<IrcClient*>	_clients;
+		std::vector<IrcClient*>	_operators;
         std::set<std::string> _modes;
 
 	public:
@@ -33,10 +34,12 @@ class IrcChannel
 		void addClient(IrcClient& client);
 		void sendMessage(const std::string& message);
         const std::vector<IrcClient*>& getMembers() const;
+		const std::vector<IrcClient*>& getOperators() const;
 		const IrcClient* getClientByName(const std::string& nickname) const;
 		void kickClient(const IrcClient& client);
 		size_t getNumClients() const;
         bool isMember(const IrcClient& client) const;
+		bool isOperator(const IrcClient& client) const;
         void addMode(const std::string& mode);
         void removeMode(const std::string& mode);
         std::string getMode() const;
