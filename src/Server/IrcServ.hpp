@@ -46,6 +46,7 @@ class IrcServ
 		std::string	getPass();
         std::vector<IrcChannel>& getChannels();
         std::map<int, IrcClient>& getClients();
+        IrcClient& getClientByNick(const std::string& nickname);
         std::string getHostname();
 		void start();
 		void setSocket();

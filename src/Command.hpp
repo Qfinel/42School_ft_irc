@@ -25,6 +25,7 @@ public:
     Command(IrcServ& server) : _server(server) {}
     virtual ~Command() {}
     virtual void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) = 0;
+    void sendResponseToChannel(IrcClient& sender, const std::string& channelName, const std::string& message);
 };
 
 class PassCommand : public Command {

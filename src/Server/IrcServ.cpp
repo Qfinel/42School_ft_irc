@@ -38,6 +38,16 @@ std::vector<IrcChannel>& IrcServ::getChannels()	{return (this->_channels);}
 
 std::map<int, IrcClient>& IrcServ::getClients()	{return (this->_clients);}
 
+IrcClient& IrcServ::getClientByNick(const std::string& nickname)
+{
+    for (std::map<int, IrcClient>::iterator it = _clients.begin(); it != _clients.end(); it++)
+    {
+        if (it->second.getNickname() == nickname)
+            return it->second;
+    }
+    throw std::runtime_error("Client not found");
+}
+
 std::string IrcServ::getHostname() { return _hostname; }
 
 void IrcServ::handleDisconnect(int fd)

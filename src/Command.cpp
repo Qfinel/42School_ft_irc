@@ -4,6 +4,27 @@
 #include <sstream>
 #include <ctime>
 
+void Command::sendResponseToChannel(IrcClient& sender, const std::string& channelName, const std::string& message) {
+    for (std::vector<IrcChannel>::iterator channel_it = _server.getChannels().begin(); channel_it != _server.getChannels().end(); ++channel_it) {
+        if (channel_it->getName() == channelName) {
+            if (!channel_it->isMember(sender)) {
+                sender.sendResponse(":" + _server.getHostname() + " 404 " + sender.getNickname() + " " + channelName + " :You cannot send external messages to this channel whilst the +n (noextmsg) mode is set.\r\n");
+                return;
+            }
+            const std::vector<IrcClient*>& members = channel_it->getMembers();
+            for (std::vector<IrcClient*>::const_iterator client_it = members.begin(); client_it != members.end(); ++client_it) {
+                if ((*client_it) != &sender) { // Only send the message to clients other than the sender
+                    (*client_it)->sendResponse(message);
+                } else {
+                    (*client_it)->sendResponse(message);
+                }
+            }
+            return;
+        }
+    }
+    // Channel not found; handle this case if needed.
+}
+
 void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() < 1) {
         client.sendResponse("461 " + client.getNickname() + " PASS"); // 461: ERR_NEEDMOREPARAMS
@@ -445,6 +466,8 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
     if (channelIt == channels.end()) {
         // Handle channel not found
         // You may want to send an appropriate error message to the client
+        // :penguin.omega.example.org 403 sdukic #kkg :No such channel
+        client.sendResponse(":" + server.getHostname() + " 403 " + client.getNickname() + " " + channelName + " :No such channel");
         return;
     }
     // Check if the client has the necessary privileges to set the mode (usually the channel operator)
@@ -464,7 +487,19 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         bool add = mode[0] == '+';
         // Set or unset the mode
         if (add) {
-            channelIt->addMode(mode.substr(1));
+            if (mode[1] == 'o') {
+                if (args.size() < 3) {
+                    channelIt->addMode(mode.substr(1));
+                } else {
+                    // Handle operator mode
+                    channelIt->addOperator(server.getClientByNick(args[2]));
+                    // :sdukic!a@127.0.0.1 MODE #general +o :bob
+                    std::string response = ":" + client.getNickname() + "!~" + client.getUsername() + "@" + client.getHostname() + " MODE " + channelName + " " + mode + " " + args[2];
+                    sendResponseToChannel(client, channelName, response);
+                }
+            } else {
+                channelIt->addMode(mode.substr(1));
+            }
         } else {
             channelIt->removeMode(mode.substr(1));
         }

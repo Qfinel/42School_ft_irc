@@ -33,6 +33,7 @@ class IrcChannel
 
 		const std::string& getName() const;
 		void addClient(IrcClient& client);
+        void addOperator(IrcClient& client);
 		void sendMessage(const std::string& message);
         const std::vector<IrcClient*>& getMembers() const;
 		const std::vector<IrcClient*>& getOperators() const;

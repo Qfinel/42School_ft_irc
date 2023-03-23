@@ -34,6 +34,12 @@ void IrcChannel::addClient(IrcClient& client) {
 	_clients.push_back(&client);
 }
 
+void IrcChannel::addOperator(IrcClient& client) {
+    if (!isMember(client))
+        throw std::runtime_error("482 " + client.getNickname() + " :No such client in the channel: " + client.getNickname());
+    _operators.push_back(&client);
+}
+
 void IrcChannel::sendMessage(const std::string& message) {
     for (std::vector<IrcClient*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
         IrcClient* client = *it;
