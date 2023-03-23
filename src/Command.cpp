@@ -398,7 +398,7 @@ void ListCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
             std::stringstream ss;
             ss << list[i].getNumClients();
             std::string num = ss.str();
-            client.sendResponse("322 " + client.getNickname() + " " + list[i].getName() + " " + num + " :" + list[i].getTopic());
+            client.sendResponse(":ft_irc 322 " + client.getNickname() + " " + list[i].getName() + " " + num + " :" + list[i].getTopic());
         } 
         client.sendResponse("323 " + client.getNickname() + " :End of /LIST");
     }

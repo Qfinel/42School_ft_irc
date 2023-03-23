@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 15:00:49 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/23 15:27:45 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,12 +72,19 @@ void IrcChannel::kickClient(const IrcClient& client) {
 
     for (std::vector<IrcClient*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
         if (*it == &client)
+        {
             _clients.erase(it);
+            break ;
+        }    
     }
     if (isOperator(client)) {
         for (std::vector<IrcClient*>::iterator it = _operators.begin(); it != _operators.end(); ++it) {
             if (*it == &client)
+            {
                 _operators.erase(it);
+                return ;
+            }
+                
         }
     }
 }
