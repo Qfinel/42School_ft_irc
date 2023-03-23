@@ -2,6 +2,7 @@
 #include "Server/IrcServ.hpp"
 #include "Server/IrcClient.hpp"
 #include <sstream>
+#include <ctime>
 
 void PassCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() < 1) {
@@ -428,11 +429,12 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
     if (args.size() == 1) {
         std::string modeString = channelIt->getMode();
         std::string hostname = server.getHostname();
-        std::string timestamp = "1679504576";
+        // std::string timestamp = "1679504576";
+        std::time_t current_time = std::time(NULL);
 
         client.sendResponse(":" + hostname + " 324 " + client.getNickname() + " " + channelName + " :" + modeString);
-        client.sendResponse(":" + hostname + " 329 " + client.getNickname() + " " + channelName + " :" + timestamp);
-    } else {
+        client.sendResponse(":" + hostname + " 329 " + client.getNickname() + " " + channelName + " :" + std::to_string(current_time));
+    } else if (channelIt->isOperator(client)) {
         const std::string& mode = args[1];
         bool add = mode[0] == '+';
         // Set or unset the mode
@@ -441,5 +443,12 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         } else {
             channelIt->removeMode(mode.substr(1));
         }
+    } else if (args[1][0] == '+' || args[1][0] == '-'){
+        // Handle insufficient privileges
+        // You may want to send an appropriate error message to the client
+        // :penguin.omega.example.org 482 bob #general :You must be a channel op or higher to set channel mode p (private).
+        client.sendResponse("482 " + client.getNickname() + " " + channelName + " :You must be a channel op or higher to set channel mode " + args[1]);
+    } else {
+        // Banning is not handled here
     }
 }
