@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/24 12:23:04 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/24 12:43:47 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,5 +278,5 @@ void IrcServ::inviteUserToChannel(const std::string& nickname, const std::string
 	IrcClient	*user = getClientByNick(nickname);
 
 	//put invitee on invite list
-	channel->addToInviteList(*user); // need to check in JOIN command if user is on _invited_clients;
+	channel->addToInviteList(user); // need to check in JOIN command if user is on _invited_clients;
 }

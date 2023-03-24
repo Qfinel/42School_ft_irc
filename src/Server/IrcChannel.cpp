@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcChannel.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 18:50:32 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/24 12:43:18 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ void IrcChannel::addOperator(IrcClient& client) {
         throw std::runtime_error("482 " + client.getNickname() + " :No such client in the channel: " + client.getNickname());
     _operators.push_back(&client);
 }
-void IrcChannel::addToInviteList(const IrcClient& client) {
-    _invited_clients.push_back(&client);
+void IrcChannel::addToInviteList(IrcClient *client) {
+    _invited_clients.push_back(client);
 }
 
 void IrcChannel::sendMessage(const std::string& message) {
@@ -121,6 +121,24 @@ void IrcChannel::addMode(const std::string& mode) {
 
 void IrcChannel::removeMode(const std::string& mode) {
     _modes.erase(mode);
+}
+
+bool IrcChannel::hasMode(const std::string& mode) const {
+    for (std::set<std::string>::const_iterator it = _modes.begin(); it != _modes.end(); ++it) {
+        if (*it == mode)
+            return (true);
+    }
+    return (false);
+}
+
+bool IrcChannel::isInvited(const IrcClient& client) const {
+    for (std::vector<IrcClient*>::const_iterator it = _invited_clients.begin(); it != _invited_clients.end(); ++it) {
+        const IrcClient* member = *it;
+        if (&client == member) {
+            return true;
+        }
+    }
+    return false;
 }
 
 const std::string& IrcChannel::getTopic() const {return (_topic);}

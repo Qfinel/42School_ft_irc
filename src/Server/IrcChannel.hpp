@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcChannel.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:30:42 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 18:51:32 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/24 12:43:25 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class IrcChannel
 		std::vector<IrcClient*>	_operators;
         std::set<std::string> _modes;
 		std::string		_topic;
-		std::vector<const IrcClient*> _invited_clients;
+		std::vector<IrcClient*> _invited_clients;
 
 	public:
 		IrcChannel(const std::string& name);
@@ -35,7 +35,7 @@ class IrcChannel
 		const std::string& getName() const;
 		void addClient(IrcClient& client);
         void addOperator(IrcClient& client);
-		void addToInviteList(const IrcClient& client);
+		void addToInviteList(IrcClient *client);
 		void sendMessage(const std::string& message);
         const std::vector<IrcClient*>& getMembers() const;
 		const std::vector<IrcClient*>& getOperators() const;
@@ -44,11 +44,13 @@ class IrcChannel
 		size_t getNumClients() const;
         bool isMember(const IrcClient& client) const;
 		bool isOperator(const IrcClient& client) const;
+		bool isInvited(const IrcClient& client) const;
         void addMode(const std::string& mode);
         void removeMode(const std::string& mode);
         std::string getMode() const;
 		const std::string& getTopic() const;
 		void setTopic(const std::string &topic);
+		bool hasMode(const std::string& mode) const;
 };
 
 #endif

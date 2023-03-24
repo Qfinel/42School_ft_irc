@@ -125,6 +125,7 @@ void JoinCommand::joinChannel(IrcClient &client, const std::string &channelName)
     // Check if the channel exists; if not, create it
     std::vector<IrcChannel>::iterator it = std::find_if(_server.getChannels().begin(), _server.getChannels().end(), ChannelNameMatcher(channelName));
 
+
     // If the channel doesn't exist, create a new one and add it to the _channels vector
     if (it == _server.getChannels().end()) {
         IrcChannel newChannel(channelName);
@@ -132,12 +133,14 @@ void JoinCommand::joinChannel(IrcClient &client, const std::string &channelName)
         _server.getChannels().push_back(newChannel);
         client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);
     } else if (!it->isMember(client)){
+        if (it->hasMode("i") && !it->isInvited(client)) {
+            client.sendResponse("473 " + client.getNickname() + " " + channelName + " :It's invite only channel"); // NEED APPROPRIATE RESPONSE
+            return ;
+        }
         // Add the client to the existing channel
         it->addClient(client);
         client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);
     }
-    // Notify the client that they have joined the channel
-    // client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);
 }
 
 void JoinCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
