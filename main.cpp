@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:12:35 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/22 12:47:05 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/24 12:27:42 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,6 @@ int	main(int argc, char **argv)
 		std::cerr << e.what() << std::endl;
 		return (-1);
 	}
+	system("leaks ircserv");
 	return (0);
 }

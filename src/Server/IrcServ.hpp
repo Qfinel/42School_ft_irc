@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcServ.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:29:49 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 18:47:33 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/24 11:57:23 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ class IrcServ
 		std::string	getPass();
         std::vector<IrcChannel>& getChannels();
         std::map<int, IrcClient>& getClients();
-        IrcClient& getClientByNick(const std::string& nickname);
+        IrcClient *getClientByNick(const std::string& nickname);
         std::string getHostname();
 		void start();
 		void setSocket();

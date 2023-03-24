@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcServ.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 18:46:53 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/24 12:23:04 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,14 @@ std::vector<IrcChannel>& IrcServ::getChannels()	{return (this->_channels);}
 
 std::map<int, IrcClient>& IrcServ::getClients()	{return (this->_clients);}
 
-IrcClient& IrcServ::getClientByNick(const std::string& nickname)
+IrcClient *IrcServ::getClientByNick(const std::string& nickname)
 {
     for (std::map<int, IrcClient>::iterator it = _clients.begin(); it != _clients.end(); it++)
     {
         if (it->second.getNickname() == nickname)
-            return it->second;
+            return &it->second;
     }
-    throw std::runtime_error("Client not found");
+	return (NULL);
 }
 
 std::string IrcServ::getHostname() { return _hostname; }
@@ -240,9 +240,11 @@ IrcChannel *IrcServ::getChannelByName(const std::string& channelName) {
     std::vector<IrcChannel>::iterator it = std::find_if(_channels.begin(), _channels.end(), ChannelNameMatcher(channelName));
     if (it != _channels.end()) {
         return it.base();
-    } else {
-        throw std::runtime_error("No such channel: " + channelName);
-    }
+    } 
+	// else {
+    //     throw std::runtime_error("No such channel: " + channelName);
+    // }
+	return (NULL);
 }
 
 size_t IrcChannel::getNumClients() const {
@@ -272,34 +274,9 @@ bool IrcServ::nickInUse(const std::string &nick, IrcClient cl)
 }
 
 void IrcServ::inviteUserToChannel(const std::string& nickname, const std::string& channelName) {
-    
-	// Check if channel exits
-    IrcChannel* channel = getChannelByName(channelName);
-    if (!channel) {
-        throw std::runtime_error("403 " + channelName + " :No such channel\r\n");
-        return;
-    }
-
-	//check if sender is oper
-	
-	const IrcClient* user = channel->getClientByName(nickname);
-	if (!user) {
-    throw std::runtime_error("401 " + nickname + " :No such nick\r\n");
-    return;
-}
-
-	
-	// Check if user is already a member of the channel
-    if (channel->isMember(*user)) {
-        throw std::runtime_error("443 " + nickname + " " + channelName + " :is already on channel\r\n");
-        return;
-    }
-
-	//check if invite only
+	IrcChannel	*channel = getChannelByName(channelName);
+	IrcClient	*user = getClientByNick(nickname);
 
 	//put invitee on invite list
 	channel->addToInviteList(*user); // need to check in JOIN command if user is on _invited_clients;
-	channel->sendMessage("341 " + nickname + " " + channelName);
-	
-	//
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/23 18:51:11 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/24 12:04:00 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
         return new ModeCommand(*_serv);
     } else if (commandName == "TOPIC") {
         return new TopicCommand(*_serv);
+    } else if (commandName == "INVITE") {
+        return new InviteCommand(*_serv);
     }
     // Add other commands here, e.g. NICK, USER, JOIN, etc.
     return NULL;

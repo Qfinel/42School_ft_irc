@@ -487,7 +487,7 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
                     channelIt->addMode(mode.substr(1));
                 } else {
                     // Handle operator mode
-                    channelIt->addOperator(server.getClientByNick(args[2]));
+                    channelIt->addOperator(*server.getClientByNick(args[2]));
                     // :sdukic!a@127.0.0.1 MODE #general +o :bob
                     std::string response = ":" + client.getNickname() + "!~" + client.getUsername() + "@" + client.getHostname() + " MODE " + channelName + " " + mode + " " + args[2];
                     sendResponseToChannel(client, channelName, response);
@@ -547,11 +547,41 @@ void TopicCommand::execute(IrcServ& server, IrcClient& client, const std::vector
 
 void InviteCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
         if (args.size() != 2) {
-            client.sendResponse("461 " + client.getNickname() + "INVITE :Not enough parameters\r\n"); 
+            client.sendResponse("461 " + client.getNickname() + " INVITE"); 
             return;
         }
-        std::string user = args[0];
-        std::string channel = args[1];
-        
-        server.inviteUserToChannel(user, channel);
+
+        // Check if channel exits
+        IrcChannel* channel = server.getChannelByName(args[1]);
+        if (!channel) {
+            client.sendResponse("403 " + client.getNickname() + " " + args[1] + " :No such channel");
+            return;
+        }
+
+        //check if sender is member
+        if (!channel->isMember(client)) {
+            client.sendResponse("442 " + client.getNickname() + " " + args[1] + " :You're not on that channel");
+            return;
+        }
+
+        //check if sender is oper
+        if (!channel->isOperator(client)) {
+            client.sendResponse("482 " + client.getNickname() + " " + args[1] + " :You're not channel operator"); // 482: ERR_CHANOPRIVSNEEDED
+            return;
+        }
+
+        // Check if user is already a member of the channel
+        IrcClient *invitee = server.getClientByNick(args[0]);
+        if (!invitee) {
+            client.sendResponse("401 " + client.getNickname() + " " + args[0] + " :Client doesn't exist");
+            return;
+        }
+        if (channel->isMember(*invitee)) {
+            client.sendResponse("443 " + args[0] + " " + args[1] + " :Cannot join channel (reason: You are already a member of this channel)");
+            return;
+        }
+
+        server.inviteUserToChannel(args[0], args[1]);
+        channel->sendMessage("341 " + client.getNickname() + " " + args[0] + " " + args[1]);
+        invitee->sendResponse("341 " + client.getNickname() + " " + args[0] + " " + args[1]);
 }
