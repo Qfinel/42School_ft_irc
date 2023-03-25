@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   IrcChannel.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/24 12:43:18 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/25 13:12:37 by hngo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "IrcChannel.hpp"
 
 IrcChannel::IrcChannel(const std::string& name)
-    : _name(name)
+    : _name(name), _channel_is_invite_only(false)
 {
     // Set default modes to +nt
     _modes.insert("n");
@@ -144,3 +144,26 @@ bool IrcChannel::isInvited(const IrcClient& client) const {
 const std::string& IrcChannel::getTopic() const {return (_topic);}
 
 void IrcChannel::setTopic(const std::string &topic) {_topic = topic;}
+
+bool IrcChannel::isInviteOnly() const{
+    return _channel_is_invite_only;
+}
+
+void IrcChannel::setInviteOnly(bool invite_only) {
+    _channel_is_invite_only = invite_only;
+
+    if (_channel_is_invite_only) {
+        // Add the channel to the list of invite-only channels
+        _invite_only_channels.push_back(this);
+    } else {
+        // Remove the channel from the list of invite-only channels
+        std::vector<IrcChannel*>::iterator it = std::find(_invite_only_channels.begin(), _invite_only_channels.end(), this);
+        if (it != _invite_only_channels.end()) {
+            _invite_only_channels.erase(it);
+        }
+    }
+}
+
+const std::vector<IrcChannel*>& IrcChannel::getInviteOnlyChannels() {
+    return _invite_only_channels;
+}
