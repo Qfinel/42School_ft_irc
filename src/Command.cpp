@@ -452,6 +452,7 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
     if (args.size() < 1) {
         // Handle incorrect usage: not enough arguments
         // You may want to send an appropriate error message to the client
+        client.sendResponse(":" + server.getHostname() + " 461 " + client.getNickname() + " MODE :Not enough parameters");
         return;
     }
 
