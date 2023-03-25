@@ -496,11 +496,15 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
                     std::string response = ":" + client.getNickname() + "!~" + client.getUsername() + "@" + client.getHostname() + " MODE " + channelName + " " + mode + " " + args[2];
                     sendResponseToChannel(client, channelName, response);
                 }
-            } else {
+            } else if (mode[1] == 'i') {
+                channelIt->setInviteOnly(true); // set bool and add channel to invite_only_channels vector
                 channelIt->addMode(mode.substr(1));
             }
         } else {
-            channelIt->removeMode(mode.substr(1));
+            if (mode[1] == 'i') {
+                channelIt->setInviteOnly(false); // set bool to false and remove from invite_only_channels vector
+                channelIt->removeMode(mode.substr(1));
+            }
         }
     } else if (args[1][0] == '+' || args[1][0] == '-'){
         // Handle insufficient privileges
