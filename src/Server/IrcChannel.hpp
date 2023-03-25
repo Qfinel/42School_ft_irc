@@ -6,7 +6,7 @@
 /*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:30:42 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/25 13:13:08 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/25 13:51:25 by hngo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ class IrcChannel
         std::set<std::string> _modes;
 		std::string		_topic;
 		std::vector<IrcClient*> _invited_clients;
-		bool _channel_is_invite_only;
 		static std::vector<IrcChannel*> _invite_only_channels;
+		bool _channel_is_invite_only;
 
 	public:
 		IrcChannel(const std::string& name);

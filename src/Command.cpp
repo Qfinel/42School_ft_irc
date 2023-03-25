@@ -498,9 +498,10 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
                 }
             } else if (mode[1] == 'i') {
                 channelIt->setInviteOnly(true); // set bool and add channel to invite_only_channels vector
+                // not sure is a message is required after setting channel to invite only
                 channelIt->addMode(mode.substr(1));
             }
-        } else { // mode in subtraction mode(-) remove modes
+        } else { // mode is in subtraction mode(-) remove modes
             if (mode[1] == 'i') {
                 channelIt->setInviteOnly(false); // set bool to false and remove from invite_only_channels vector
                 channelIt->removeMode(mode.substr(1));

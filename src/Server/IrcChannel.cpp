@@ -6,7 +6,7 @@
 /*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/25 13:12:37 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/25 14:35:49 by hngo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,8 @@ void IrcChannel::setTopic(const std::string &topic) {_topic = topic;}
 bool IrcChannel::isInviteOnly() const{
     return _channel_is_invite_only;
 }
+
+std::vector<IrcChannel*> IrcChannel::_invite_only_channels;
 
 void IrcChannel::setInviteOnly(bool invite_only) {
     _channel_is_invite_only = invite_only;
