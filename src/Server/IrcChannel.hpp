@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcChannel.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:30:42 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/24 12:43:25 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/25 12:27:16 by hngo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ class IrcChannel
         std::set<std::string> _modes;
 		std::string		_topic;
 		std::vector<IrcClient*> _invited_clients;
+		bool _channel_is_invite_only;
+		static std::vector<IrcChannel*> _invite_only_channels;
 
 	public:
 		IrcChannel(const std::string& name);
@@ -51,6 +53,9 @@ class IrcChannel
 		const std::string& getTopic() const;
 		void setTopic(const std::string &topic);
 		bool hasMode(const std::string& mode) const;
+		bool isInviteOnly() const;
+		void setInviteOnly(bool invite_only);
+		static const std::vector<IrcChannel*>& getInviteOnlyChannels();
 };
 
 #endif
