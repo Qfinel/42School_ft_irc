@@ -500,7 +500,7 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
                 channelIt->setInviteOnly(true); // set bool and add channel to invite_only_channels vector
                 channelIt->addMode(mode.substr(1));
             }
-        } else {
+        } else { // mode in subtraction mode(-) remove modes
             if (mode[1] == 'i') {
                 channelIt->setInviteOnly(false); // set bool to false and remove from invite_only_channels vector
                 channelIt->removeMode(mode.substr(1));
@@ -563,6 +563,12 @@ void InviteCommand::execute(IrcServ& server, IrcClient& client, const std::vecto
         IrcChannel* channel = server.getChannelByName(args[1]);
         if (!channel) {
             client.sendResponse("403 " + client.getNickname() + " " + args[1] + " :No such channel");
+            return;
+        }
+
+        // Check if channel is invite-only
+        if (channel->isInviteOnly() && !channel->isInvited(client)) {
+            client.sendResponse("473 " + client.getNickname() + " " + args[1] + " :Cannot join channel (invite only)");
             return;
         }
 
