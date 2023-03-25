@@ -567,12 +567,6 @@ void InviteCommand::execute(IrcServ& server, IrcClient& client, const std::vecto
             return;
         }
 
-        // Check if channel is invite-only
-        if (channel->isInviteOnly() && !channel->isInvited(client)) {
-            client.sendResponse("473 " + client.getNickname() + " " + args[1] + " :Cannot join channel (invite only)");
-            return;
-        }
-
         //check if sender is member
         if (!channel->isMember(client)) {
             client.sendResponse("442 " + client.getNickname() + " " + args[1] + " :You're not on that channel");
