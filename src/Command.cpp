@@ -133,9 +133,8 @@ void JoinCommand::joinChannel(IrcClient &client, const std::string &channelName)
         _server.getChannels().push_back(newChannel);
         client.sendResponse(":" + client.getNickname() + " JOIN :" + channelName);
     } else if (!it->isMember(client)){
-        if (it->hasMode("i") && !it->isInvited(client)) {
-            client.sendResponse("473 " + client.getNickname() + " " + channelName + " :It's invite only channel"); // NEED APPROPRIATE RESPONSE
-            return ;
+        if (it->isInviteOnly()  && !it->isInvited(client)) {
+            client.sendResponse("473 " + client.getNickname() + " " + channelName + " :Cannot join channel (invite only)");
         }
         // Add the client to the existing channel
         it->addClient(client);
