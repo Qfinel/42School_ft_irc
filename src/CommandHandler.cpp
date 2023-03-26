@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 14:36:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/24 12:04:00 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/26 14:31:25 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ CommandHandler::CommandHandler(IrcServ *serv, IrcClient *cl, std::string buffer)
 	this->_serv = serv;
 }
 
-CommandHandler::~CommandHandler()	{delete this->_comm;}
+CommandHandler::~CommandHandler()	{}
 
 Command* CommandHandler::getCommand(const std::string& commandName) {
     if (commandName == "PASS") {
@@ -157,7 +157,6 @@ Command* CommandHandler::getCommand(const std::string& commandName) {
 void CommandHandler::handle() {
     std::istringstream input(this->_buff);
     std::string line;
-    std::cout << "CommandHandler::handle()" << std::endl;
     std::cout << this->_buff << std::endl; // for debugging
 
     while (std::getline(input, line)) {
@@ -176,12 +175,14 @@ void CommandHandler::handle() {
 
         if (!this->_client->getIsAuth() && (commandName != "PASS" && commandName != "NICK" && commandName != "QUIT" && commandName != "PING" && commandName != "CAP" && command != NULL)) {
             this->_client->sendResponse("451 " + this->_client->getNickname() + " :Please provide a server password using PASS command");
+            delete command;
         } else if (command != NULL) {
                 if ((commandName != "USER" && commandName != "NICK" && commandName != "PASS" && commandName != "QUIT" && commandName != "PING" && commandName != "CAP") && !this->_client->getUserAndNickSet()) {
                     this->_client->sendResponse("461 " + this->_client->getNickname() + " :Please set both USER and NICK before using other commands");
                 } else {
                     command->execute(*_serv, *_client, args);
                 }
+            delete command;
         } else {
             this->_client->sendResponse("421 " + this->_client->getNickname() + " :" + commandName); // ERR_UNKNOWNCOMMAND
         }
