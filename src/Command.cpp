@@ -241,7 +241,7 @@ void NoticeCommand::sendPrivateMessage(IrcClient& sender, const std::string& tar
             return;
         }
     }
-    // Target user not found; you can handle this case if needed.
+
 }
 
 void NoticeCommand::sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message) {
@@ -257,10 +257,13 @@ void NoticeCommand::sendChannelMessage(IrcClient& sender, const std::string& cha
             return;
         }
     }
-    // Channel not found; handle this case if needed.
+
 }
 
 void NoticeCommand::execute(IrcServ& server, IrcClient& sender, const std::vector<std::string>& args) {
+    
+    //NOTICE <nick/channel> :<message>
+
     if (args.size() < 2) {
         sender.sendResponse("461 " + sender.getNickname() + " NOTICE");
         return ;
@@ -287,7 +290,7 @@ void NoticeCommand::execute(IrcServ& server, IrcClient& sender, const std::vecto
             return;
         }
     } else {
-        if (server.getClientByNick(target) != NULL) {
+        if (server.getClientByNick(target) == NULL) {
             sender.sendResponse("401 " + sender.getNickname() +  " :No such nick");
             return;
         }
