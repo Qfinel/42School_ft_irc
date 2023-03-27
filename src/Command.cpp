@@ -260,26 +260,17 @@ void NoticeCommand::sendChannelMessage(IrcClient& sender, const std::string& cha
     // Channel not found; handle this case if needed.
 }
 
-void NoticeCommand::sendMessage(IrcClient& sender, const std::string& target, const std::string& message) {
-    // If the target starts with '#' or '&', it's a channel; otherwise, it's a user.
-    if (target[0] == '#' || target[0] == '&') {
-        sendChannelMessage(sender, target, message);
-    } else {
-        sendPrivateMessage(sender, target, message);
-    }
-}
-
-
-
-void NoticeCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
+void NoticeCommand::execute(IrcServ& server, IrcClient& sender, const std::vector<std::string>& args) {
     if (args.size() < 2) {
-        client.sendResponse("461 " + client.getNickname() + " NOTICE");
+        sender.sendResponse("461 " + sender.getNickname() + " NOTICE");
         return ;
     }
-    // Find the colon (:) to parse the message.
-    size_t colonPos = args[1].find(':');
+
+    std::string target = args[0];
     std::string message;
 
+    // Find the colon (:) to parse the message.
+    size_t colonPos = args[1].find(':');
     if (colonPos != 0) {
         message = args[1];
     } else {
@@ -289,7 +280,25 @@ void NoticeCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::
         }
     }
 
-    sendMessage(client, args[0], message);
+    // Check if target exists.
+    if (target[0] == '#' || target[0] == '&') {
+        if (!server.channelExists(target)) {
+            sender.sendResponse("403 " + sender.getNickname() + " " + target + " :No such channel");
+            return;
+        }
+    } else {
+        if (server.getClientByNick(target) != NULL) {
+            sender.sendResponse("401 " + sender.getNickname() +  " :No such nick");
+            return;
+        }
+    }
+
+    // Send the message to the target.
+    if (target[0] == '#' || target[0] == '&') {
+        sendChannelMessage(sender, target, message);
+    } else {
+        sendPrivateMessage(sender, target, message);
+    }
 }
 
 void PingCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::string>& args) {
