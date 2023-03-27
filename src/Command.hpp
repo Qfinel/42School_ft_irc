@@ -73,7 +73,6 @@ public:
     NoticeCommand(IrcServ& server) : Command(server) {}
     void sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message);
     void sendPrivateMessage(IrcClient& sender, const std::string& targetUser, const std::string& message);
-    void sendMessage(IrcClient& sender, const std::string& target, const std::string& message);
     virtual void execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args);
 };
 
