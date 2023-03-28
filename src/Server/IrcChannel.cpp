@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/28 12:22:15 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/28 14:04:29 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,6 @@ void IrcChannel::addClient(IrcClient& client) {
 }
 
 void IrcChannel::addOperator(IrcClient& client) {
-    if (!isMember(client))
-        throw std::runtime_error("482 " + client.getNickname() + " :No such client in the channel: " + client.getNickname());
     _operators.push_back(&client);
 }
 void IrcChannel::addToInviteList(IrcClient *client) {

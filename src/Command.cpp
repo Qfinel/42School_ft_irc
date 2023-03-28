@@ -135,6 +135,7 @@ void JoinCommand::joinChannel(IrcClient &client, const std::string &channelName)
     } else if (!it->isMember(client)){
         if (it->isInviteOnly()  && !it->isInvited(client)) {
             client.sendResponse("473 " + client.getNickname() + " " + channelName + " :Cannot join channel (invite only)");
+            return ;
         }
         // Add the client to the existing channel
         it->addClient(client);
@@ -506,6 +507,10 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
                     channelIt->addMode(mode.substr(1));
                 } else {
                     // Handle operator mode
+                    if (!channelIt->isMember(*server.getClientByNick(args[2]))) {
+                        client.sendResponse("482 " + channelName + " " + args[2] + " :No such client on the channel");
+                        return ;
+                    }    
                     channelIt->addOperator(*server.getClientByNick(args[2]));
                     // :sdukic!a@127.0.0.1 MODE #general +o :bob
                     std::string response = ":" + client.getNickname() + "!~" + client.getUsername() + "@" + client.getHostname() + " MODE " + channelName + " " + mode + " " + args[2];
