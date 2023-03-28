@@ -156,7 +156,7 @@ void JoinCommand::execute(IrcServ&, IrcClient& client, const std::vector<std::st
 void PrivmsgCommand::sendPrivateMessage(IrcClient& sender, const std::string& targetUser, const std::string& message) {
     for (std::map<int, IrcClient>::iterator it = _server.getClients().begin(); it != _server.getClients().end(); ++it) {
         if (it->second.getNickname() == targetUser) {
-            std::string response = ":" + sender.getNickname() + " PRIVMSG " + targetUser + " :" + message + "\r\n";
+            std::string response = ":" + sender.getNickname() + " PRIVMSG " + targetUser + " :" + message;
             it->second.sendResponse(response);
             return;
         }
@@ -171,7 +171,7 @@ void PrivmsgCommand::sendChannelMessage(IrcClient& sender, const std::string& ch
                 return;
             }
 
-            std::string response = ":" + sender.getNickname() + " PRIVMSG " + channelName + " :" + message + "\r\n";
+            std::string response = ":" + sender.getNickname() + " PRIVMSG " + channelName + " :" + message;
             const std::vector<IrcClient*>& members = channel_it->getMembers();
             for (std::vector<IrcClient*>::const_iterator client_it = members.begin(); client_it != members.end(); ++client_it) {
                 if ((*client_it) != &sender) { // Only send the message to clients other than the sender
@@ -238,6 +238,10 @@ void NoticeCommand::sendPrivateMessage(IrcClient& sender, const std::string& tar
 void NoticeCommand::sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message) {
     for (std::vector<IrcChannel>::iterator channel_it = _server.getChannels().begin(); channel_it != _server.getChannels().end(); ++channel_it) {
         if (channel_it->getName() == channelName) {
+            if (!channel_it->isMember(sender) && channel_it->hasMode("n")) {
+                sender.sendResponse("473 " + sender.getNickname() + " " + channelName +  " :Can't send external messages to the channel");
+                return ;
+            }
             std::string response = ":" + sender.getNickname() + " NOTICE " + channelName + " :" + message;
             const std::vector<IrcClient*>& members = channel_it->getMembers();
             for (std::vector<IrcClient*>::const_iterator client_it = members.begin(); client_it != members.end(); ++client_it) {
@@ -522,6 +526,10 @@ void TopicCommand::execute(IrcServ& server, IrcClient& client, const std::vector
     }
 
     IrcChannel *channel = server.getChannelByName(args[0]);
+    if (!channel->isMember(client) && channel->hasMode("t")) {
+        client.sendResponse("473 " + client.getNickname() + " " + args[0] +  " :Channel is in the non-external topics mode");
+        return ;
+    }
     if (args.size() == 1) {
         client.sendResponse("332 " + client.getNickname() + " " + args[0] + " :" + channel->getTopic());
     } else {
