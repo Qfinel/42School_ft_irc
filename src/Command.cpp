@@ -482,7 +482,9 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         if (add) {
             if (mode[1] == 'o') {
                 if (args.size() < 3) {
-                    channelIt->addMode(mode.substr(1));
+                    // channelIt->addMode(mode.substr(1));
+                    // :penguin.omega.example.org 696 sdukic #general o * :You must specify a parameter for the op mode. Syntax: <nick>.
+                    client.sendResponse(":" + server.getHostname() + " 696 " + client.getNickname() + " " + channelName + " " + mode.substr(1) + " * :You must specify a parameter for the op mode. Syntax: <nick>.");
                 } else {
                     // Handle operator mode
                     if (!channelIt->isMember(*server.getClientByNick(args[2]))) {
@@ -502,11 +504,23 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         } else { // mode is in subtraction mode(-) remove modes
             if (mode[1] == 'i') {
                 channelIt->setInviteOnly(false); // set bool to false and remove from invite_only_channels vector
-            }
-            if (mode[1] != 'o')
                 channelIt->removeMode(mode.substr(1));
-            else
-                channelIt->removeOperator(*server.getClientByNick(args[2]));
+            }
+            if (mode[1] == 'o')
+            {
+                if (args.size() < 3) {
+                    client.sendResponse(":" + server.getHostname() + " 696 " + client.getNickname() + " " + channelName + " " + mode.substr(1) + " * :You must specify a parameter for the op mode. Syntax: <nick>.");
+                } else {
+                    // Handle operator mode
+                    if (!channelIt->isMember(*server.getClientByNick(args[2]))) {
+                        client.sendResponse("482 " + channelName + " " + args[2] + " :No such client on the channel");
+                        return ;
+                    }    
+                    channelIt->removeOperator(*server.getClientByNick(args[2]));
+                }
+            } else {
+                channelIt->removeMode(mode.substr(1));
+            } 
         }
     } else if (args[1][0] == '+' || args[1][0] == '-'){
         // Handle insufficient privileges

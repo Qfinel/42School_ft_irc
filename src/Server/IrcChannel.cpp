@@ -35,7 +35,8 @@ void IrcChannel::addClient(IrcClient& client) {
 }
 
 void IrcChannel::addOperator(IrcClient& client) {
-    _operators.push_back(&client);
+    if (!isOperator(client))
+        _operators.push_back(&client);
 }
 void IrcChannel::addToInviteList(IrcClient *client) {
     _invited_clients.push_back(client);
