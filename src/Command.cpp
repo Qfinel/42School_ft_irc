@@ -161,24 +161,7 @@ void PrivmsgCommand::sendPrivateMessage(IrcClient& sender, const std::string& ta
             return;
         }
     }
-    // Target user not found; you can handle this case if needed.
 }
-
-// void PrivmsgCommand::sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message) {
-//     for (std::vector<IrcChannel>::iterator channel_it = _server.getChannels().begin(); channel_it != _server.getChannels().end(); ++channel_it) {
-//         if (channel_it->getName() == channelName) {
-//             std::string response = ":" + sender.getNickname() + " PRIVMSG " + channelName + " :" + message + "\r\n";
-//             const std::vector<IrcClient*>& members = channel_it->getMembers();
-//             for (std::vector<IrcClient*>::const_iterator client_it = members.begin(); client_it != members.end(); ++client_it) {
-//                 if ((*client_it) != &sender) { // Only send the message to clients other than the sender
-//                     (*client_it)->sendResponse(response);
-//                 }
-//             }
-//             return;
-//         }
-//     }
-//     // Channel not found; handle this case if needed.
-// }
 
 void PrivmsgCommand::sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message) {
     for (std::vector<IrcChannel>::iterator channel_it = _server.getChannels().begin(); channel_it != _server.getChannels().end(); ++channel_it) {
@@ -198,14 +181,21 @@ void PrivmsgCommand::sendChannelMessage(IrcClient& sender, const std::string& ch
             return;
         }
     }
-    // Channel not found; handle this case if needed.
 }
 
 void PrivmsgCommand::sendMessage(IrcClient& sender, const std::string& target, const std::string& message) {
     // If the target starts with '#' or '&', it's a channel; otherwise, it's a user.
     if (target[0] == '#' || target[0] == '&') {
+        if (!_server.channelExists(target)) {
+            sender.sendResponse("403 " + sender.getNickname() + " " + target + " :No such channel");
+            return ;
+        }
         sendChannelMessage(sender, target, message);
     } else {
+        if (!_server.getClientByNick(target)) {
+            sender.sendResponse("401 " + sender.getNickname() + " " + target + " :No such client");
+            return ;
+        }
         sendPrivateMessage(sender, target, message);
     }
 }
@@ -292,7 +282,7 @@ void NoticeCommand::execute(IrcServ& server, IrcClient& sender, const std::vecto
         }
     } else {
         if (server.getClientByNick(target) == NULL) {
-            sender.sendResponse("401 " + sender.getNickname() +  " :No such nick");
+            sender.sendResponse("401 " + sender.getNickname() + " " + target + " :No such client");
             return;
         }
     }
@@ -431,21 +421,6 @@ void PartCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
     }
 }
 
-// void ListCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
-//     if (args.size() == 0) {
-//         client.sendResponse("321 " + client.getNickname() + " Channel :Users Name");
-//         std::vector<IrcChannel> list = server.getChannels();
-//         for (size_t i = 0; i < list.size(); i++)
-//         {
-//             std::stringstream ss;
-//             ss << list[i].getNumClients();
-//             std::string num = ss.str();
-//             client.sendResponse(":ft_irc 322 " + client.getNickname() + " " + list[i].getName() + " " + num + " :" + list[i].getTopic());
-//         } 
-//         client.sendResponse("323 " + client.getNickname() + " :End of /LIST");
-//     }
-// }
-
 void ListCommand::execute(IrcServ& server, IrcClient& client, const std::vector<std::string>& args) {
     if (args.size() == 0) {
         std::string server_name = server.getHostname();
@@ -492,7 +467,6 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
     if (args.size() == 1) {
         std::string modeString = channelIt->getMode();
         std::string hostname = server.getHostname();
-        // std::string timestamp = "1679504576";
         std::time_t current_time = std::time(NULL);
 
         client.sendResponse(":" + hostname + " 324 " + client.getNickname() + " " + channelName + " :" + modeString);
@@ -532,8 +506,6 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
         // You may want to send an appropriate error message to the client
         // :penguin.omega.example.org 482 bob #general :You must be a channel op or higher to set channel mode p (private).
         client.sendResponse("482 " + client.getNickname() + " " + channelName + " :You must be a channel op or higher to set channel mode " + args[1]);
-    } else {
-        // Banning is not handled here
     }
 }
 
@@ -566,9 +538,6 @@ void TopicCommand::execute(IrcServ& server, IrcClient& client, const std::vector
             }
         }
 
-        // std::string topic = args[1];
-        // for (size_t i = 2; i < args.size(); i++)
-        //     topic += " " + args[i];
         channel->setTopic(topic);
         client.sendResponse("332 " + client.getNickname() + " " + args[0] + " :" + topic); // SET TOPIC
     }

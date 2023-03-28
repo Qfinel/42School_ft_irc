@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/28 12:22:03 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/28 14:21:55 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,15 +92,6 @@ void IrcServ::handleConnect()
 
 	IrcClient new_client(client_fd);
 	this->_clients.insert(std::make_pair(client_fd, new_client));
-
-	// try
-	// {
-	// 	new_client.sendResponse("Welcome on board! Please provide a server password using PASS command");
-	// }
-	// catch (const std::runtime_error& e)
-	// {
-	// 	std::cerr << e.what() << '\n';
-	// }
 
 	struct pollfd 	new_poll;
 	new_poll.fd = client_fd;
@@ -241,9 +232,6 @@ IrcChannel *IrcServ::getChannelByName(const std::string& channelName) {
     if (it != _channels.end()) {
         return it.base();
     } 
-	// else {
-    //     throw std::runtime_error("No such channel: " + channelName);
-    // }
 	return (NULL);
 }
 
