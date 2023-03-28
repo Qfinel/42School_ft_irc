@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcChannel.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:30:42 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/25 13:51:25 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/28 18:53:53 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ class IrcChannel
 		const std::string& getName() const;
 		void addClient(IrcClient& client);
         void addOperator(IrcClient& client);
+		void removeOperator(IrcClient& client);
 		void addToInviteList(IrcClient *client);
 		void sendMessage(const std::string& message);
         const std::vector<IrcClient*>& getMembers() const;

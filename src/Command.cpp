@@ -503,7 +503,10 @@ void ModeCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
             if (mode[1] == 'i') {
                 channelIt->setInviteOnly(false); // set bool to false and remove from invite_only_channels vector
             }
-            channelIt->removeMode(mode.substr(1));
+            if (mode[1] != 'o')
+                channelIt->removeMode(mode.substr(1));
+            else
+                channelIt->removeOperator(*server.getClientByNick(args[2]));
         }
     } else if (args[1][0] == '+' || args[1][0] == '-'){
         // Handle insufficient privileges

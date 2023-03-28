@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/28 14:04:29 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/28 18:56:59 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,4 +164,15 @@ void IrcChannel::setInviteOnly(bool invite_only) {
 
 const std::vector<IrcChannel*>& IrcChannel::getInviteOnlyChannels() {
     return _invite_only_channels;
+}
+
+
+void IrcChannel::removeOperator(IrcClient& client)
+{
+    for (std::vector<IrcClient*>::iterator it = _operators.begin(); it != _operators.end(); ++it) {
+        if (&client == *it) {
+            _operators.erase(it);
+            break ;
+        }    
+    }
 }
