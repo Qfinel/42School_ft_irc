@@ -6,7 +6,7 @@
 /*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 16:31:54 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/24 12:43:47 by jtsizik          ###   ########.fr       */
+/*   Updated: 2023/03/28 12:22:03 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,8 +258,6 @@ void IrcServ::kickClientFromChannel(const IrcClient& client, const std::string& 
         if (it->getNumClients() == 0) {
             _channels.erase(it);
         }
-    } else {
-        throw std::runtime_error("No such channel: " + channelName);
     }
 }
 

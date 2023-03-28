@@ -236,7 +236,7 @@ void PrivmsgCommand::execute(IrcServ&, IrcClient& client, const std::vector<std:
 void NoticeCommand::sendPrivateMessage(IrcClient& sender, const std::string& targetUser, const std::string& message) {
     for (std::map<int, IrcClient>::iterator it = _server.getClients().begin(); it != _server.getClients().end(); ++it) {
         if (it->second.getNickname() == targetUser) {
-            std::string response = ":" + sender.getNickname() + " NOTICE " + targetUser + " :" + message + "\r\n";
+            std::string response = ":" + sender.getNickname() + " NOTICE " + targetUser + " :" + message;
             it->second.sendResponse(response);
             return;
         }
@@ -247,7 +247,7 @@ void NoticeCommand::sendPrivateMessage(IrcClient& sender, const std::string& tar
 void NoticeCommand::sendChannelMessage(IrcClient& sender, const std::string& channelName, const std::string& message) {
     for (std::vector<IrcChannel>::iterator channel_it = _server.getChannels().begin(); channel_it != _server.getChannels().end(); ++channel_it) {
         if (channel_it->getName() == channelName) {
-            std::string response = ":" + sender.getNickname() + " NOTICE " + channelName + " :" + message + "\r\n";
+            std::string response = ":" + sender.getNickname() + " NOTICE " + channelName + " :" + message;
             const std::vector<IrcClient*>& members = channel_it->getMembers();
             for (std::vector<IrcClient*>::const_iterator client_it = members.begin(); client_it != members.end(); ++client_it) {
                 if ((*client_it) != &sender) { // Only send the message to clients other than the sender
@@ -329,6 +329,10 @@ void KickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
             const IrcChannel *ircChannel = server.getChannelByName(channel);
             const IrcClient* nicknameClient = ircChannel->getClientByName(nickname);
             if (nicknameClient != &client && ircChannel->isOperator(client)) { // check if the client to be kicked is not the one issuing the command
+                if (!ircChannel->isMember(*nicknameClient)) {
+                    client.sendResponse("482 " + nickname + " " + channel + " :Client's not on the channel");
+                    return ;
+                }
                 server.kickClientFromChannel(*nicknameClient, channel);
                 if (args.size() > 2) {
                     std::string reason = args[2];
@@ -341,10 +345,10 @@ void KickCommand::execute(IrcServ& server, IrcClient& client, const std::vector<
             } else if (!ircChannel->isOperator(client)){
                 client.sendResponse("482 " + client.getNickname() + " " + channel + " :You're not channel operator"); // 482: ERR_CHANOPRIVSNEEDED
             } else {
-                client.sendResponse(client.getNickname() + " " + channel + " :You can't kick yourself");
+                client.sendResponse("482 " + client.getNickname() + " " + channel + " :You can't kick yourself!");
             }
         } else {
-            client.sendResponse("442 " + client.getNickname() + " " + channel + " :You're not on that channel"); // 442: ERR_NOTONCHANNEL
+            client.sendResponse("482 " + client.getNickname() + " " + channel + " :You're not on that channel");
         }
     } else {
         client.sendResponse("403 " + client.getNickname() + " " + channel + " :No such channel"); // 403: ERR_NOSUCHCHANNEL

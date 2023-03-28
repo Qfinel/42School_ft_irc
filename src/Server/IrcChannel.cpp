@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcChannel.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hngo <hngo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: jtsizik <jtsizik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 15:31:52 by jtsizik           #+#    #+#             */
-/*   Updated: 2023/03/25 14:35:49 by hngo             ###   ########.fr       */
+/*   Updated: 2023/03/28 12:22:15 by jtsizik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ const IrcClient* IrcChannel::getClientByName(const std::string& nickname) const 
             return *it;
         }
     }
-    throw std::runtime_error("No such client: " + nickname);
+    return (NULL);
 }
 
 std::string IrcChannel::getMode() const {
@@ -76,8 +76,6 @@ std::string IrcChannel::getMode() const {
 }
 
 void IrcChannel::kickClient(const IrcClient& client) {
-    if (!isMember(client))
-        throw std::runtime_error("No such client in the channel: " + client.getNickname());
 
     for (std::vector<IrcClient*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
         if (*it == &client) {
